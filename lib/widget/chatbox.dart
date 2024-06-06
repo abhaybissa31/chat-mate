@@ -5,8 +5,18 @@ class ChatBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(80),
+        boxShadow: [
+          new BoxShadow(
+            color: Colors.grey,
+            blurRadius: 1,
+            // spreadRadius: 0,
+          )
+        ],
+        color: Color.fromARGB(255, 0, 0, 0),
+        shape: BoxShape.rectangle,
+        borderRadius: BorderRadius.circular(50),
       ),
       child: const Row(
         children: [

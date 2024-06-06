@@ -125,21 +125,21 @@ class Chatlist1 extends StatelessWidget {
                         ),
                     color: Colors.black,
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(25, 15, 25, 0),
-                    child: ListView.builder(
-                      itemCount: 20,
-                      itemBuilder: (context, index) {
-                        return const Column(
+                  child: ListView.builder(
+                    itemCount: 20,
+                    itemBuilder: (context, index) {
+                      return const Padding(
+                        padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                        child: Column(
                           children: [
                             ChatBox(),
                             SizedBox(
-                              height: 20,
+                              height: 5,
                             )
                           ],
-                        );
-                      },
-                    ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
