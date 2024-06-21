@@ -14,15 +14,16 @@ class Chatlist1 extends StatelessWidget {
         "Abhay bissa is jere hehehehe and some more words to test the word limit of twelve"
             .substring(0, 12);
 
+    Color chngcolor = const Color.fromARGB(255, 31, 30, 30);
+
     return Material(
       child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 18, 17, 17),
+        backgroundColor: chngcolor,
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 18, 17, 17),
-          systemOverlayStyle: const SystemUiOverlayStyle(
+          backgroundColor: chngcolor,
+          systemOverlayStyle: SystemUiOverlayStyle(
             systemNavigationBarIconBrightness: Brightness.light,
-            statusBarColor: Color.fromARGB(
-                255, 18, 17, 17), // Ensures status bar stays dark
+            statusBarColor: chngcolor, // Ensures status bar stays dark
           ),
           scrolledUnderElevation: 0,
           automaticallyImplyLeading: false,
@@ -49,8 +50,7 @@ class Chatlist1 extends StatelessWidget {
           ],
         ),
         body: Container(
-          decoration:
-              const BoxDecoration(color: Color.fromARGB(255, 18, 17, 17)),
+          decoration: BoxDecoration(color: chngcolor),
           child: Column(
             children: [
               Expanded(
@@ -83,12 +83,11 @@ class Chatlist1 extends StatelessWidget {
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(100),
                                     ),
-                                    child: const CircleAvatar(
+                                    child: CircleAvatar(
                                       radius: 40,
-                                      backgroundColor:
-                                          Color.fromARGB(255, 18, 17, 17),
-                                      foregroundImage:
-                                          AssetImage("lib/assets/images/1.jpg"),
+                                      backgroundColor: chngcolor,
+                                      foregroundImage: const AssetImage(
+                                          "lib/assets/images/1.jpg"),
                                     ),
                                   ),
                                   const SizedBox(height: 5),
@@ -118,28 +117,31 @@ class Chatlist1 extends StatelessWidget {
                 child: Container(
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(45),
-                        topRight: Radius.circular(45)
-                        // topRight: Radius.elliptical(100, 60),
-                        // topLeft: Radius.elliptical(100, 60)
-                        ),
+                      topLeft: Radius.circular(45),
+                      topRight: Radius.circular(45),
+                    ),
                     color: Colors.black,
                   ),
-                  child: ListView.builder(
-                    itemCount: 20,
-                    itemBuilder: (context, index) {
-                      return const Padding(
-                        padding: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                        child: Column(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ListView.builder(
+                      physics:
+                          ClampingScrollPhysics(), // Prevent overflow by constraining scrolling
+                      itemCount: 20,
+                      itemBuilder: (context, index) {
+                        return const Column(
                           children: [
-                            ChatBox(),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(10, 1, 10, 10),
+                              child: ChatBox(),
+                            ),
                             SizedBox(
-                              height: 5,
-                            )
+                                // height: 5,
+                                )
                           ],
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
