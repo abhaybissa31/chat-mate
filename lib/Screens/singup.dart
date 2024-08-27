@@ -1,6 +1,9 @@
 import 'package:chat_app/Screens/login.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+final _firebase = FirebaseAuth.instance;
 
 class Singupscreen extends StatefulWidget {
   const Singupscreen({super.key});
@@ -44,13 +47,25 @@ class _SingupscreenState extends State<Singupscreen> {
     var enteredEmail = '';
     var enteredPass = '';
 
-    void submit() {
+    void submit() async {
       final isValidated = formkey.currentState!.validate();
 
       if (isValidated) {
+        var _errormsg;
         formkey.currentState!.save();
-        print(enteredEmail);
-        print(enteredPass);
+        try {
+          final userCredentials =
+              await _firebase.createUserWithEmailAndPassword(
+                  email: enteredEmail, password: enteredPass);
+          print(userCredentials);
+        } on FirebaseAuthException catch (error) {
+          ScaffoldMessenger.of(context).clearMaterialBanners();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error.message ?? 'Authentication failed'),
+            ),
+          );
+        }
       }
     }
 
