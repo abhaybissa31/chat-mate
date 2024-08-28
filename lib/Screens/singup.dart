@@ -1,4 +1,5 @@
 import 'package:chat_app/Screens/login.dart';
+import 'package:chat_app/widget/pagechange.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,30 +18,6 @@ class _SingupscreenState extends State<Singupscreen> {
   bool peakPassword = true;
   Widget eyeValue = const Icon(CupertinoIcons.eye_fill);
 
-  _OpenSingupPage(BuildContext context) async {
-    print("Login function started");
-    Navigator.of(context).pushReplacement(
-      // MaterialPageRoute(builder: (BuildContext context)=>const Login())
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => const Login(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = 0.0;
-          const end = 1.0;
-          const curve = Curves.ease;
-
-          var tween =
-              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-          var opacityAnimation = animation.drive(tween);
-
-          return FadeTransition(
-            opacity: opacityAnimation,
-            child: child,
-          );
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final formkey = GlobalKey<FormState>();
@@ -51,7 +28,6 @@ class _SingupscreenState extends State<Singupscreen> {
       final isValidated = formkey.currentState!.validate();
 
       if (isValidated) {
-        var _errormsg;
         formkey.currentState!.save();
         try {
           final userCredentials =
@@ -390,7 +366,7 @@ class _SingupscreenState extends State<Singupscreen> {
                     const SizedBox(width: 5),
                     GestureDetector(
                       onTap: () {
-                        _OpenSingupPage(context);
+                        PageChange.changeScreen(context, const Login());
                       },
                       child: const Text(
                         "Login",

@@ -1,6 +1,9 @@
 import 'package:chat_app/Screens/singup.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+final _firebase = FirebaseAuth.instance;
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -42,6 +45,30 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
+    final formkey = GlobalKey<FormState>();
+    var enteredEmail = '';
+    var enteredPass = '';
+
+    void submit() async {
+      final isValidated = formkey.currentState!.validate();
+
+      if (isValidated) {
+        formkey.currentState!.save();
+        try {
+          final userCredentials = await _firebase.signInWithEmailAndPassword(
+              email: enteredEmail, password: enteredPass);
+          print(userCredentials);
+        } on FirebaseAuthException catch (error) {
+          ScaffoldMessenger.of(context).clearMaterialBanners();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(error.message ?? 'Authentication failed'),
+            ),
+          );
+        }
+      }
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -91,8 +118,22 @@ class _LoginState extends State<Login> {
                     const SizedBox(
                       height: 5,
                     ),
-                    TextField(
+                    TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      autocorrect: false,
+                      textCapitalization: TextCapitalization.none,
                       controller: _usernameController,
+                      validator: (value) {
+                        if (value == null ||
+                            value.trim().isEmpty ||
+                            !value.contains('@')) {
+                          return "Please enter a valid email address";
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        enteredEmail = value!;
+                      },
                       style: const TextStyle(color: Colors.white),
                       decoration: const InputDecoration(
                         hintText: 'Enter your email',
@@ -123,10 +164,22 @@ class _LoginState extends State<Login> {
                     const SizedBox(
                       height: 5,
                     ),
-                    TextField(
+                    TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      autocorrect: false,
+                      textCapitalization: TextCapitalization.none,
                       style: const TextStyle(color: Colors.white),
                       controller: _passwordController,
                       obscureText: peakPassword,
+                      validator: (value) {
+                        if (value == null || value.trim().length < 6) {
+                          return "Password must be 6 characters long  ";
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        enteredPass = value!;
+                      },
                       decoration: InputDecoration(
                         hintText: 'Enter Password',
                         suffixIcon: InkWell(
@@ -164,7 +217,7 @@ class _LoginState extends State<Login> {
                       // Adjust the radius as needed
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: submit,
                   child: const Center(
                     child: Text(
                       "Login",
