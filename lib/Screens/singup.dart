@@ -95,10 +95,10 @@ class _SingupscreenState extends State<Singupscreen> {
                 const Row(
                   children: [
                     Text(
-                      'Let\u0027s get',
+                      ' Let\u0027s get you',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 28,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -110,23 +110,28 @@ class _SingupscreenState extends State<Singupscreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    Text(
+                      "🚀",
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
                   ],
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 24),
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
                       shape: BoxShape.rectangle,
-                      border: const Border(
-                          top: BorderSide(color: Colors.grey),
-                          bottom: BorderSide(color: Colors.grey),
-                          right: BorderSide(color: Colors.grey),
-                          left: BorderSide(color: Colors.grey)),
+                      border: Border.all(color: Colors.grey),
                       borderRadius: BorderRadius.circular(19)),
                   child: Column(
                     children: [
                       Row(
-                        crossAxisAlignment: CrossAxisAlignment
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment
                             .center, // Align items vertically centered
                         children: [
                           // Column for Image (Avatar + Icon)
@@ -134,6 +139,9 @@ class _SingupscreenState extends State<Singupscreen> {
                             mainAxisAlignment: MainAxisAlignment
                                 .center, // Center image vertically
                             children: [
+                              const SizedBox(
+                                height: 20,
+                              ),
                               Container(
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
@@ -145,29 +153,41 @@ class _SingupscreenState extends State<Singupscreen> {
                                   // Adjust the size of the CircleAvatar if necessary
                                 ),
                               ),
-                              const SizedBox(
-                                height: 15,
-                              ), // Image (Avatar)
-                              const Row(
-                                children: [
-                                  Icon(
-                                    Icons.add_photo_alternate,
-                                    color: Colors.white,
-                                    size: 20,
-                                    textDirection: TextDirection.ltr,
-                                    applyTextScaling: true,
-                                  ),
-                                  Text(
-                                    "Add picture",
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 16),
-                                  )
-                                ],
+                              // Image (Avatar)
+                              // const Row(
+                              //   children: [
+                              //     // Icon(
+                              //     //   Icons.add_photo_alternate,
+                              //     //   color: Colors.white,
+                              //     //   size: 20,
+                              //     //   textDirection: TextDirection.ltr,
+                              //     //   applyTextScaling: true,
+                              //     // ),
+                              //     // Text(
+                              //     //   "Add picture",
+                              //     //   style: TextStyle(
+                              //     //       color: Colors.white, fontSize: 16),
+                              //     // )
+                              //   ],
+                              // ),
+
+                              TextButton.icon(
+                                // style: const ButtonStyle(),
+                                onPressed: () {},
+                                icon: const Icon(
+                                  Icons.add_photo_alternate,
+                                  color: Colors.white,
+                                ),
+                                label: const Text(
+                                  "Add Image",
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 16),
+                                ),
                               ),
                             ],
                           ),
                           const SizedBox(
-                              width: 40), // Space between image and text fields
+                              width: 15), // Space between image and text fields
 
                           // Flexible Column for TextFields
                           Flexible(
@@ -288,16 +308,17 @@ class _SingupscreenState extends State<Singupscreen> {
                         ],
                       ),
                       const SizedBox(
-                        height: 28,
+                        height: 15,
                       ),
                       ElevatedButton(
                         // style:OutlinedButton.styleFrom(backgroundColor: Colors.white,),
                         style: ElevatedButton.styleFrom(
+                          // fixedSize: Size(350, 25),
                           backgroundColor: Colors.white,
                           // foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             side: const BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(5),
+                            borderRadius: BorderRadius.circular(10),
                             // Adjust the radius as needed
                           ),
                         ),

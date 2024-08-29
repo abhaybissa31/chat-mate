@@ -78,7 +78,7 @@ class SplashScreenState extends State<SplashScreen>
                   ),
                 ),
                 Positioned(
-                  top: 50,
+                  top: 70,
                   left: 0,
                   right: 0,
                   child: Column(
@@ -150,6 +150,7 @@ class SplashScreenState extends State<SplashScreen>
                   ),
                 ),
                 // ),
+
                 Positioned(
                   bottom: 254 + _animation.value,
                   left: 255,
@@ -163,7 +164,7 @@ class SplashScreenState extends State<SplashScreen>
                   bottom: 50 +
                       _animation
                           .value, // Apply the animation value to the bottom position
-                  left: 0,
+                  left: 0 + _animation.value,
                   right: 55,
                   child: Column(
                     children: [
