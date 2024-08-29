@@ -1,3 +1,4 @@
+import 'package:chat_app/Screens/chatlist.dart';
 import 'package:chat_app/Screens/login.dart';
 import 'package:chat_app/widget/pagechange.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,16 +30,48 @@ class _SingupscreenState extends State<Singupscreen> {
 
       if (isValidated) {
         formkey.currentState!.save();
+
         try {
           final userCredentials =
               await _firebase.createUserWithEmailAndPassword(
-                  email: enteredEmail, password: enteredPass);
+            email: enteredEmail,
+            password: enteredPass,
+          );
           print(userCredentials);
+
+          ScaffoldMessenger.of(context).clearMaterialBanners();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.black,
+              content: Row(
+                children: [
+                  Text("Signed up Successfully. Welcome to "),
+                  Text(
+                    "ChatMate",
+                    style: TextStyle(color: Colors.green),
+                  )
+                ],
+              ),
+            ),
+          );
+
+          // Redirect to Chatlist after successful signup
+          PageChange.changeScreen(context, const Chatlist());
         } on FirebaseAuthException catch (error) {
           ScaffoldMessenger.of(context).clearMaterialBanners();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(error.message ?? 'Authentication failed'),
+              backgroundColor: Colors.black,
+              content: Text(error.message ?? 'Failed to create account'),
+            ),
+          );
+        } catch (e) {
+          // Handle any other unexpected errors
+          print('Unexpected error: $e');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.black,
+              content: Text('An unexpected error occurred. Please try again.'),
             ),
           );
         }
@@ -271,7 +304,7 @@ class _SingupscreenState extends State<Singupscreen> {
                         onPressed: submit,
                         child: const Center(
                           child: Text(
-                            "Login",
+                            "Signup",
                             style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold),

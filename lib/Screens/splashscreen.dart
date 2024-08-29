@@ -1,5 +1,6 @@
 import 'package:chat_app/Screens/login.dart';
 import 'package:chat_app/Screens/singup.dart';
+import 'package:chat_app/widget/pagechange.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -39,34 +40,6 @@ class SplashScreenState extends State<SplashScreen>
 
     // Repeat the animation indefinitely in reverse
     _controller.repeat(reverse: true);
-  }
-
-  _OpenLoginPage(BuildContext context, String pageName) async {
-    Widget page = const Login();
-    if (pageName == "Signup") {
-      page = const Singupscreen();
-    }
-    print("Login function started");
-    Navigator.of(context).push(
-      // MaterialPageRoute(builder: (BuildContext context)=>const Login())
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => page,
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = 0.0;
-          const end = 1.0;
-          const curve = Curves.ease;
-
-          var tween =
-              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-          var opacityAnimation = animation.drive(tween);
-
-          return FadeTransition(
-            opacity: opacityAnimation,
-            child: child,
-          );
-        },
-      ),
-    );
   }
 
   @override
@@ -131,7 +104,8 @@ class SplashScreenState extends State<SplashScreen>
                         children: [
                           FilledButton(
                             onPressed: () {
-                              _OpenLoginPage(context, "Signup");
+                              PageChange.changeScreen(
+                                  context, const Singupscreen());
                             },
                             child: const Column(
                               children: [
@@ -159,7 +133,7 @@ class SplashScreenState extends State<SplashScreen>
                                 backgroundColor: Colors.white,
                                 foregroundColor: Colors.black),
                             onPressed: () {
-                              _OpenLoginPage(context, "Login");
+                              PageChange.changeScreen(context, const Login());
                             },
                             child: const Column(
                               children: [

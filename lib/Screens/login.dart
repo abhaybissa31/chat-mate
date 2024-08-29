@@ -1,4 +1,6 @@
+import 'package:chat_app/Screens/chatlist.dart';
 import 'package:chat_app/Screens/singup.dart';
+import 'package:chat_app/widget/pagechange.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,31 +20,6 @@ class _LoginState extends State<Login> {
   bool peakPassword = true;
   Widget eyeValue = const Icon(CupertinoIcons.eye_fill);
 
-  _OpenSingupPage(BuildContext context) async {
-    print("Login function started");
-    Navigator.of(context).pushReplacement(
-      // MaterialPageRoute(builder: (BuildContext context)=>const Login())
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const Singupscreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = 0.0;
-          const end = 1.0;
-          const curve = Curves.ease;
-
-          var tween =
-              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-          var opacityAnimation = animation.drive(tween);
-
-          return FadeTransition(
-            opacity: opacityAnimation,
-            child: child,
-          );
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final formkey = GlobalKey<FormState>();
@@ -54,15 +31,46 @@ class _LoginState extends State<Login> {
 
       if (isValidated) {
         formkey.currentState!.save();
+
         try {
           final userCredentials = await _firebase.signInWithEmailAndPassword(
               email: enteredEmail, password: enteredPass);
-          print(userCredentials);
+
+          print(userCredentials); // You may want to log specific info
+
+          ScaffoldMessenger.of(context).clearMaterialBanners();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.black,
+              content: Row(
+                children: [
+                  Text("Welcome to "),
+                  Text(
+                    "ChatMate",
+                    style: TextStyle(color: Colors.green),
+                  )
+                ],
+              ),
+            ),
+          );
+
+          // Navigate to the Chatlist screen
+          PageChange.changeScreen(context, const Chatlist());
         } on FirebaseAuthException catch (error) {
           ScaffoldMessenger.of(context).clearMaterialBanners();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
+              backgroundColor: Colors.black,
               content: Text(error.message ?? 'Authentication failed'),
+            ),
+          );
+        } catch (e) {
+          // Handle any other exceptions
+          print('Unexpected error: $e');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              backgroundColor: Colors.black,
+              content: Text('An unexpected error occurred. Please try again.'),
             ),
           );
         }
@@ -79,6 +87,7 @@ class _LoginState extends State<Login> {
         child: Padding(
           padding: const EdgeInsets.fromLTRB(21, 0, 21, 0),
           child: Form(
+            key: formkey,
             child: Column(
               children: [
                 const Row(
@@ -310,7 +319,7 @@ class _LoginState extends State<Login> {
                         width: 5), // Add spacing between texts if needed
                     GestureDetector(
                       onTap: () {
-                        _OpenSingupPage(context);
+                        PageChange.changeScreen(context, const Singupscreen());
                       },
                       child: const Text(
                         "Signup",
