@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:chat_app/Screens/chatlist.dart';
 import 'package:chat_app/Screens/login.dart';
 import 'package:chat_app/widget/pagechange.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_picker_android/image_picker_android.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -18,63 +22,85 @@ class _SingupscreenState extends State<Singupscreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool peakPassword = true;
   Widget eyeValue = const Icon(CupertinoIcons.eye_fill);
+  final formkey = GlobalKey<FormState>();
+  var enteredEmail = '';
+  var enteredPass = '';
+
+  void submit() async {
+    final isValidated = formkey.currentState!.validate();
+
+    if (isValidated) {
+      formkey.currentState!.save();
+
+      try {
+        final userCredentials = await _firebase.createUserWithEmailAndPassword(
+          email: enteredEmail,
+          password: enteredPass,
+        );
+        print(userCredentials);
+
+        ScaffoldMessenger.of(context).clearMaterialBanners();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.black,
+            content: Row(
+              children: [
+                Text("Signed up Successfully. Welcome to "),
+                Text(
+                  "ChatMate",
+                  style: TextStyle(color: Colors.green),
+                )
+              ],
+            ),
+          ),
+        );
+
+        // Redirect to Chatlist after successful signup
+        PageChange.changeScreen(context, const Chatlist());
+      } on FirebaseAuthException catch (error) {
+        ScaffoldMessenger.of(context).clearMaterialBanners();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.black,
+            content: Text(error.message ?? 'Failed to create account'),
+          ),
+        );
+      } catch (e) {
+        // Handle any other unexpected errors
+        print('Unexpected error: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: Colors.black,
+            content: Text('An unexpected error occurred. Please try again.'),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final formkey = GlobalKey<FormState>();
-    var enteredEmail = '';
-    var enteredPass = '';
-
-    void submit() async {
-      final isValidated = formkey.currentState!.validate();
-
-      if (isValidated) {
-        formkey.currentState!.save();
-
-        try {
-          final userCredentials =
-              await _firebase.createUserWithEmailAndPassword(
-            email: enteredEmail,
-            password: enteredPass,
-          );
-          print(userCredentials);
-
-          ScaffoldMessenger.of(context).clearMaterialBanners();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.black,
-              content: Row(
-                children: [
-                  Text("Signed up Successfully. Welcome to "),
-                  Text(
-                    "ChatMate",
-                    style: TextStyle(color: Colors.green),
-                  )
-                ],
-              ),
-            ),
-          );
-
-          // Redirect to Chatlist after successful signup
-          PageChange.changeScreen(context, const Chatlist());
-        } on FirebaseAuthException catch (error) {
-          ScaffoldMessenger.of(context).clearMaterialBanners();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.black,
-              content: Text(error.message ?? 'Failed to create account'),
-            ),
-          );
-        } catch (e) {
-          // Handle any other unexpected errors
-          print('Unexpected error: $e');
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              backgroundColor: Colors.black,
-              content: Text('An unexpected error occurred. Please try again.'),
-            ),
-          );
+    File? _pickedImageFile;
+    void _pickimage(String pickertype) async {
+      if (pickertype == "Gallery") {
+        print("picker image running");
+        final pickedImage = await ImagePickerAndroid().pickImage(
+            source: ImageSource.gallery, imageQuality: 70, maxWidth: 150);
+        if (pickedImage == null) {
+          return;
         }
+        setState(() {
+          _pickedImageFile = File(pickedImage.path);
+        });
+      } else {
+        final pickedImage = await ImagePickerAndroid().pickImage(
+            source: ImageSource.camera, imageQuality: 70, maxWidth: 150);
+        if (pickedImage == null) {
+          return;
+        }
+        setState(() {
+          _pickedImageFile = File(pickedImage.path);
+        });
       }
     }
 
@@ -147,9 +173,12 @@ class _SingupscreenState extends State<Singupscreen> {
                                   shape: BoxShape.circle,
                                   border: Border.all(color: Colors.white),
                                 ),
-                                child: const CircleAvatar(
+                                child: CircleAvatar(
                                   radius: 60,
                                   backgroundColor: Colors.black,
+                                  foregroundImage: _pickedImageFile != null
+                                      ? FileImage(_pickedImageFile!)
+                                      : null,
                                   // Adjust the size of the CircleAvatar if necessary
                                 ),
                               ),
@@ -173,7 +202,7 @@ class _SingupscreenState extends State<Singupscreen> {
 
                               TextButton.icon(
                                 // style: const ButtonStyle(),
-                                onPressed: () {},
+                                onPressed: () => _pickimage("Gallery"),
                                 icon: const Icon(
                                   Icons.add_photo_alternate,
                                   color: Colors.white,
