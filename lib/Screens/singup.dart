@@ -81,6 +81,44 @@ class _SingupscreenState extends State<Singupscreen> {
   @override
   Widget build(BuildContext context) {
     File? _pickedImageFile;
+
+    // _takePicture(bool isCameraSelected) async {
+    //   final imagePicker = ImagePicker();
+    //   if (isCameraSelected) {
+    //     final pickedImage = await imagePicker.pickImage(
+    //       source: ImageSource.camera,
+    //       imageQuality: 100,
+    //       maxWidth: 600,
+    //     );
+    //     ScaffoldMessenger.of(context).clearSnackBars();
+    //     if (pickedImage == null) {
+    //       return;
+    //     }
+
+    //     setState(() {
+    //       _selectedImage = File(pickedImage.path);
+    //     });
+
+    //     widget.onPickImage(_selectedImage!);
+    //   } else {
+    //     final pickedImage = await imagePicker.pickImage(
+    //       source: ImageSource.gallery,
+    //       imageQuality: 100,
+    //       maxWidth: 600,
+    //     );
+    //     ScaffoldMessenger.of(context).clearSnackBars();
+    //     if (pickedImage == null) {
+    //       return;
+    //     }
+
+    //     setState(() {
+    //       _selectedImage = File(pickedImage.path);
+    //     });
+
+    //     widget.onPickImage(_selectedImage!);
+    //   }
+    // }
+
     void _pickimage(String pickertype) async {
       if (pickertype == "Gallery") {
         print("picker image running");
@@ -102,6 +140,100 @@ class _SingupscreenState extends State<Singupscreen> {
           _pickedImageFile = File(pickedImage.path);
         });
       }
+    }
+
+    void _chooseImagePickerSource() {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          key: const Key("snackbar"),
+          closeIconColor: Colors.white,
+          backgroundColor: const Color.fromARGB(255, 18, 18, 18),
+          duration: const Duration(seconds: 120),
+          content: Column(
+            children: [
+              const Row(
+                children: [
+                  Text(
+                    'Choose a picker:',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 25,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  InkWell(
+                    splashFactory: InkSparkle.splashFactory,
+                    onTap: () => _pickimage("Camera"),
+                    child: const Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // InkWell(
+                        // onTap:() => _takePicture(true) ,
+                        Column(
+                          children: [
+                            Icon(
+                              CupertinoIcons.camera,
+                              color: Colors.white,
+                              // onPressed: ,
+                            ),
+                            Text(
+                              'Click a picture',
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
+                        ),
+                        // )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 90,
+                  ),
+                  InkWell(
+                    splashFactory: InkSparkle.splashFactory,
+                    enableFeedback: true,
+                    onTap: () => _pickimage("Gallery"),
+                    child: const Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            Icon(
+                              CupertinoIcons.photo_on_rectangle,
+                              // onPressed:,
+                              color: Colors.white,
+                            ),
+                            Text(
+                              'Choose from Gallery',
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 10,
+              )
+            ],
+          ),
+        ),
+      );
+      // }
     }
 
     return Scaffold(
@@ -202,7 +334,7 @@ class _SingupscreenState extends State<Singupscreen> {
 
                               TextButton.icon(
                                 // style: const ButtonStyle(),
-                                onPressed: () => _pickimage("Gallery"),
+                                onPressed: () => _chooseImagePickerSource(),
                                 icon: const Icon(
                                   Icons.add_photo_alternate,
                                   color: Colors.white,
