@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class PageChange {
   // Static method for screen navigation
   static void changeScreen(BuildContext context, Widget page) {
+    ScaffoldMessenger.of(context).clearSnackBars();
     Navigator.of(context).pushReplacement(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => page,

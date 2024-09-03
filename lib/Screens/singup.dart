@@ -78,10 +78,10 @@ class _SingupscreenState extends State<Singupscreen> {
     }
   }
 
+  File? _pickedImageFile;
+
   @override
   Widget build(BuildContext context) {
-    File? _pickedImageFile;
-
     // _takePicture(bool isCameraSelected) async {
     //   final imagePicker = ImagePicker();
     //   if (isCameraSelected) {
@@ -120,25 +120,23 @@ class _SingupscreenState extends State<Singupscreen> {
     // }
 
     void _pickimage(String pickertype) async {
-      if (pickertype == "Gallery") {
-        print("picker image running");
-        final pickedImage = await ImagePickerAndroid().pickImage(
-            source: ImageSource.gallery, imageQuality: 70, maxWidth: 150);
-        if (pickedImage == null) {
-          return;
-        }
+      final pickedImage = await ImagePickerAndroid().pickImage(
+        source:
+            pickertype == "Gallery" ? ImageSource.gallery : ImageSource.camera,
+        imageQuality: 70,
+        maxWidth: 150,
+      );
+
+      if (pickedImage != null) {
         setState(() {
           _pickedImageFile = File(pickedImage.path);
         });
+        print("Image selected: ${pickedImage.path}");
+        // if (_pickedImageFile != null) {
+        ScaffoldMessenger.of(context).clearSnackBars();
+        // }
       } else {
-        final pickedImage = await ImagePickerAndroid().pickImage(
-            source: ImageSource.camera, imageQuality: 70, maxWidth: 150);
-        if (pickedImage == null) {
-          return;
-        }
-        setState(() {
-          _pickedImageFile = File(pickedImage.path);
-        });
+        print("No image selected");
       }
     }
 
@@ -307,31 +305,17 @@ class _SingupscreenState extends State<Singupscreen> {
                                 ),
                                 child: CircleAvatar(
                                   radius: 60,
-                                  backgroundColor: Colors.black,
+                                  // backgroundColor: Colors.black,
                                   foregroundImage: _pickedImageFile != null
                                       ? FileImage(_pickedImageFile!)
+                                      : null,
+                                  child: _pickedImageFile == null
+                                      ? const Icon(Icons.person,
+                                          size: 50, color: Colors.white)
                                       : null,
                                   // Adjust the size of the CircleAvatar if necessary
                                 ),
                               ),
-                              // Image (Avatar)
-                              // const Row(
-                              //   children: [
-                              //     // Icon(
-                              //     //   Icons.add_photo_alternate,
-                              //     //   color: Colors.white,
-                              //     //   size: 20,
-                              //     //   textDirection: TextDirection.ltr,
-                              //     //   applyTextScaling: true,
-                              //     // ),
-                              //     // Text(
-                              //     //   "Add picture",
-                              //     //   style: TextStyle(
-                              //     //       color: Colors.white, fontSize: 16),
-                              //     // )
-                              //   ],
-                              // ),
-
                               TextButton.icon(
                                 // style: const ButtonStyle(),
                                 onPressed: () => _chooseImagePickerSource(),
