@@ -4,6 +4,7 @@ import 'package:chat_app/Screens/chatlist.dart';
 import 'package:chat_app/Screens/login.dart';
 import 'package:chat_app/widget/pagechange.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,13 +19,12 @@ class Singupscreen extends StatefulWidget {
 }
 
 class _SingupscreenState extends State<Singupscreen> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
   bool peakPassword = true;
   Widget eyeValue = const Icon(CupertinoIcons.eye_fill);
   final formkey = GlobalKey<FormState>();
   var enteredEmail = '';
   var enteredPass = '';
+  bool isAuthenticating = false;
 
   void submit() async {
     final isValidated = formkey.currentState!.validate();
@@ -33,12 +33,21 @@ class _SingupscreenState extends State<Singupscreen> {
       formkey.currentState!.save();
 
       try {
+        setState(() {
+          isAuthenticating = true;
+        });
         final userCredentials = await _firebase.createUserWithEmailAndPassword(
           email: enteredEmail,
           password: enteredPass,
         );
         print(userCredentials);
-
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('user_images')
+            .child(userCredentials.user!.uid);
+        await storageRef.putFile(_pickedImageFile!);
+        final imageUrl = storageRef.getDownloadURL();
+        print(imageUrl);
         ScaffoldMessenger.of(context).clearMaterialBanners();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -58,6 +67,7 @@ class _SingupscreenState extends State<Singupscreen> {
         // Redirect to Chatlist after successful signup
         PageChange.changeScreen(context, const Chatlist());
       } on FirebaseAuthException catch (error) {
+        isAuthenticating = false;
         ScaffoldMessenger.of(context).clearMaterialBanners();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -82,43 +92,6 @@ class _SingupscreenState extends State<Singupscreen> {
 
   @override
   Widget build(BuildContext context) {
-    // _takePicture(bool isCameraSelected) async {
-    //   final imagePicker = ImagePicker();
-    //   if (isCameraSelected) {
-    //     final pickedImage = await imagePicker.pickImage(
-    //       source: ImageSource.camera,
-    //       imageQuality: 100,
-    //       maxWidth: 600,
-    //     );
-    //     ScaffoldMessenger.of(context).clearSnackBars();
-    //     if (pickedImage == null) {
-    //       return;
-    //     }
-
-    //     setState(() {
-    //       _selectedImage = File(pickedImage.path);
-    //     });
-
-    //     widget.onPickImage(_selectedImage!);
-    //   } else {
-    //     final pickedImage = await imagePicker.pickImage(
-    //       source: ImageSource.gallery,
-    //       imageQuality: 100,
-    //       maxWidth: 600,
-    //     );
-    //     ScaffoldMessenger.of(context).clearSnackBars();
-    //     if (pickedImage == null) {
-    //       return;
-    //     }
-
-    //     setState(() {
-    //       _selectedImage = File(pickedImage.path);
-    //     });
-
-    //     widget.onPickImage(_selectedImage!);
-    //   }
-    // }
-
     void _pickimage(String pickertype) async {
       final pickedImage = await ImagePickerAndroid().pickImage(
         source:
@@ -360,7 +333,6 @@ class _SingupscreenState extends State<Singupscreen> {
                                       autocorrect: false,
                                       textCapitalization:
                                           TextCapitalization.none,
-                                      controller: _usernameController,
                                       validator: (value) {
                                         if (value == null ||
                                             value.trim().isEmpty ||
@@ -406,7 +378,6 @@ class _SingupscreenState extends State<Singupscreen> {
                                       autocorrect: false,
                                       textCapitalization:
                                           TextCapitalization.none,
-                                      controller: _passwordController,
                                       obscureText: peakPassword,
                                       validator: (value) {
                                         if (value == null ||
@@ -455,28 +426,34 @@ class _SingupscreenState extends State<Singupscreen> {
                       const SizedBox(
                         height: 15,
                       ),
-                      ElevatedButton(
-                        // style:OutlinedButton.styleFrom(backgroundColor: Colors.white,),
-                        style: ElevatedButton.styleFrom(
-                          // fixedSize: Size(350, 25),
+                      if (isAuthenticating)
+                        const CircularProgressIndicator(
                           backgroundColor: Colors.white,
-                          // foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            side: const BorderSide(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(10),
-                            // Adjust the radius as needed
+                          color: Colors.green,
+                        ),
+                      if (!isAuthenticating)
+                        ElevatedButton(
+                          // style:OutlinedButton.styleFrom(backgroundColor: Colors.white,),
+                          style: ElevatedButton.styleFrom(
+                            // fixedSize: Size(350, 25),
+                            backgroundColor: Colors.white,
+                            // foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              side: const BorderSide(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(10),
+                              // Adjust the radius as needed
+                            ),
+                          ),
+                          onPressed: submit,
+                          child: const Center(
+                            child: Text(
+                              "Signup",
+                              style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
-                        onPressed: submit,
-                        child: const Center(
-                          child: Text(
-                            "Signup",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
