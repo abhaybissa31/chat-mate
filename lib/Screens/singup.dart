@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:chat_app/Screens/chatlist.dart';
 import 'package:chat_app/Screens/login.dart';
 import 'package:chat_app/widget/pagechange.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,13 +42,29 @@ class _SingupscreenState extends State<Singupscreen> {
           password: enteredPass,
         );
         print(userCredentials);
+
         final storageRef = FirebaseStorage.instance
             .ref()
             .child('user_images')
             .child(userCredentials.user!.uid);
+
+// Upload the file
         await storageRef.putFile(_pickedImageFile!);
-        final imageUrl = storageRef.getDownloadURL();
+
+// Await the download URL
+        final imageUrl = await storageRef.getDownloadURL();
         print(imageUrl);
+
+// Store user data in Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredentials.user!.uid)
+            .set({
+          'username': 'to be done',
+          'email': enteredEmail,
+          'image_url': imageUrl,
+        });
+
         ScaffoldMessenger.of(context).clearMaterialBanners();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
