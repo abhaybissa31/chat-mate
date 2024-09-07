@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chat_app/Screens/chatlist.dart';
+import 'package:chat_app/Screens/chatlist1.dart';
 import 'package:chat_app/Screens/login.dart';
 import 'package:chat_app/widget/pagechange.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -83,7 +83,7 @@ class _SingupscreenState extends State<Singupscreen> {
         );
 
         // Redirect to Chatlist after successful signup
-        PageChange.changeScreen(context, const Chatlist());
+        PageChange.changeScreen(context, const Chatlist1());
       } on FirebaseAuthException catch (error) {
         isAuthenticating = false;
         ScaffoldMessenger.of(context).clearMaterialBanners();
@@ -93,6 +93,9 @@ class _SingupscreenState extends State<Singupscreen> {
             content: Text(error.message ?? 'Failed to create account'),
           ),
         );
+        setState(() {
+          isAuthenticating = false;
+        });
       } catch (e) {
         // Handle any other unexpected errors
         print('Unexpected error: $e');
@@ -102,6 +105,9 @@ class _SingupscreenState extends State<Singupscreen> {
             content: Text('An unexpected error occurred. Please try again.'),
           ),
         );
+        setState(() {
+          isAuthenticating = false;
+        });
       }
     }
   }
