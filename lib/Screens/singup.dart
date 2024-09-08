@@ -25,6 +25,7 @@ class _SingupscreenState extends State<Singupscreen> {
   final formkey = GlobalKey<FormState>();
   var enteredEmail = '';
   var enteredPass = '';
+  var enteredUsername = '';
   bool isAuthenticating = false;
 
   void submit() async {
@@ -60,7 +61,7 @@ class _SingupscreenState extends State<Singupscreen> {
             .collection('users')
             .doc(userCredentials.user!.uid)
             .set({
-          'username': 'to be done',
+          'username': enteredUsername,
           'email': enteredEmail,
           'image_url': imageUrl,
         });
@@ -295,12 +296,12 @@ class _SingupscreenState extends State<Singupscreen> {
                                 ),
                                 child: CircleAvatar(
                                   radius: 60,
-                                  // backgroundColor: Colors.black,
+                                  backgroundColor: Colors.black,
                                   foregroundImage: _pickedImageFile != null
                                       ? FileImage(_pickedImageFile!)
                                       : null,
                                   child: _pickedImageFile == null
-                                      ? const Icon(Icons.person,
+                                      ? const Icon(CupertinoIcons.person,
                                           size: 50, color: Colors.white)
                                       : null,
                                   // Adjust the size of the CircleAvatar if necessary
@@ -375,7 +376,55 @@ class _SingupscreenState extends State<Singupscreen> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 15),
+                                const SizedBox(
+                                  height: 8,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Row(
+                                      children: [
+                                        Text(
+                                          "Username",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 5),
+                                    TextFormField(
+                                      keyboardType: TextInputType.emailAddress,
+                                      autocorrect: false,
+                                      textCapitalization:
+                                          TextCapitalization.none,
+                                      validator: (value) {
+                                        if (value == null ||
+                                            value.isEmpty ||
+                                            value.trim().length < 4) {
+                                          return "Please enter atleast 4 characters";
+                                        }
+                                        return null;
+                                      },
+                                      onSaved: (value) {
+                                        enteredUsername = value!;
+                                      },
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 15),
+                                      decoration: const InputDecoration(
+                                        hintText: 'Enter your username',
+                                        hintStyle:
+                                            TextStyle(color: Colors.grey),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(10)),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 5),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
