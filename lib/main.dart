@@ -22,10 +22,10 @@ class App extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'ChatMate',
-      theme: ThemeData().copyWith(
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color.fromARGB(255, 63, 17, 177)),
-      ),
+      // theme: ThemeData().copyWith(
+      //   colorScheme: ColorScheme.fromSeed(
+      //       seedColor: const Color.fromARGB(255, 63, 17, 177)),
+      // ),
       //
       home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
