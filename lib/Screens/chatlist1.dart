@@ -10,149 +10,140 @@ class Chatlist1 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // The full text you want to display
     String displayName =
-        "Abhay bissa is jere hehehehe and some more words to test the word limit of twelve";
+        "Abhay bissa is jere hehehehe and some more words to test the word limit of twelve"
+            .substring(0, 12);
 
-    return SafeArea(
-      child: Material(
-        // Color.fromARGB(255, 18, 17, 17)
-        // type: MaterialType.,
-        child: Scaffold(
-          backgroundColor: Color.fromARGB(255, 18, 17, 17),
-          appBar: AppBar(
-            backgroundColor: Color.fromARGB(255, 18, 17, 17),
-            systemOverlayStyle: const SystemUiOverlayStyle(
-              systemNavigationBarIconBrightness: Brightness.light,
-              statusBarColor: Color.fromARGB(
-                  255, 21, 21, 21), // Ensures status bar stays dark
-            ),
-            shadowColor: Color.fromARGB(255, 18, 17, 17),
-            scrolledUnderElevation: 0,
-            // bottomOpacity: 1,
-            // shadowColor: Colors.transparent,
-            automaticallyImplyLeading: false,
-            title: const Text(
-              "Messages",
-              style: TextStyle(color: Colors.green),
-            ),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  FirebaseAuth.instance.signOut();
-                  ScaffoldMessenger.of(context).clearMaterialBanners();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      backgroundColor: Colors.black,
-                      content: Text("Logged out"),
-                    ),
-                  );
-                  PageChange.changeScreen(context, const SplashScreen());
-                },
-                icon: const Icon(Icons.exit_to_app),
-                color: Colors.green,
-              )
-            ],
+    return Material(
+      child: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 18, 17, 17),
+        appBar: AppBar(
+          backgroundColor: const Color.fromARGB(255, 18, 17, 17),
+          systemOverlayStyle: const SystemUiOverlayStyle(
+            systemNavigationBarIconBrightness: Brightness.light,
+            statusBarColor: Color.fromARGB(
+                255, 18, 17, 17), // Ensures status bar stays dark
           ),
-          body: Container(
-            decoration:
-                const BoxDecoration(color: Color.fromARGB(255, 18, 17, 17)),
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(8, 15, 8, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Padding(
-                          padding: EdgeInsets.fromLTRB(8.0, 0, 0, 0),
-                          child: Text(
-                            "Recent",
-                            style: TextStyle(color: Colors.grey, fontSize: 18),
-                          ),
-                        ),
-                        const SizedBox(height: 1),
-                        SizedBox(
-                          height: 118,
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
-                            itemCount: 10,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.fromLTRB(7, 0, 25, 0),
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                      ),
-                                      child: const CircleAvatar(
-                                        radius: 42,
-                                        backgroundColor: Color(0xFF262626),
-                                        foregroundImage: AssetImage(
-                                            "lib/assets/images/1.jpg"),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 5),
-                                    Container(
-                                      alignment: Alignment.center,
-                                      width:
-                                          100, // Set width to control wrapping
-                                      child: Text(
-                                        overflow: TextOverflow.clip,
-                                        displayName.substring(0,
-                                            12), // Display only the first 12 words
-                                        style: const TextStyle(
-                                            color: Colors.white, fontSize: 16),
-                                        // softWrap: true, // Allow text to wrap
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
+          scrolledUnderElevation: 0,
+          automaticallyImplyLeading: false,
+          title: const Text(
+            "Messages",
+            style: TextStyle(color: Colors.green),
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+                ScaffoldMessenger.of(context).clearMaterialBanners();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    backgroundColor: Colors.black,
+                    content: Text("Logged out"),
                   ),
-                ),
-                Expanded(
-                  flex: 8,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20),
-                          topRight: Radius.circular(20)
-                          // topRight: Radius.elliptical(100, 60),
-                          // topLeft: Radius.elliptical(100, 60)
-                          ),
-                      color: Colors.black,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(25, 20, 25, 0),
-                      child: ListView.builder(
-                        itemCount: 20,
-                        itemBuilder: (context, index) {
-                          return const Column(
-                            children: [
-                              ChatBox(),
-                              SizedBox(
-                                height: 10,
-                              )
-                            ],
-                          );
-                        },
+                );
+                PageChange.changeScreen(context, const SplashScreen());
+              },
+              icon: const Icon(Icons.exit_to_app),
+              color: Colors.green,
+            )
+          ],
+        ),
+        body: Container(
+          decoration:
+              const BoxDecoration(color: Color.fromARGB(255, 18, 17, 17)),
+          child: Column(
+            children: [
+              Expanded(
+                flex: 2,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+                        child: Text(
+                          "Recent",
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
                       ),
+                      const SizedBox(height: 12),
+                      SizedBox(
+                        height: 118,
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: 10,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(7, 5, 25, 0),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(100),
+                                    ),
+                                    child: const CircleAvatar(
+                                      radius: 40,
+                                      backgroundColor:
+                                          Color.fromARGB(255, 18, 17, 17),
+                                      foregroundImage:
+                                          AssetImage("lib/assets/images/1.jpg"),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    width: 100, // Set width to control wrapping
+                                    child: Text(
+                                      overflow: TextOverflow.clip,
+                                      displayName, // Display only the first 12 words
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 16),
+                                      // softWrap: true, // Allow text to wrap
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 8,
+                child: Container(
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(45),
+                        topRight: Radius.circular(45)
+                        // topRight: Radius.elliptical(100, 60),
+                        // topLeft: Radius.elliptical(100, 60)
+                        ),
+                    color: Colors.black,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(25, 15, 25, 0),
+                    child: ListView.builder(
+                      itemCount: 20,
+                      itemBuilder: (context, index) {
+                        return const Column(
+                          children: [
+                            ChatBox(),
+                            SizedBox(
+                              height: 20,
+                            )
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

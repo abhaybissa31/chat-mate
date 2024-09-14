@@ -12,8 +12,8 @@ class ChatBox extends StatelessWidget {
         children: [
           // Avatar
           CircleAvatar(
-            radius: 32,
-            foregroundImage: AssetImage("lib/assets/images/2.jpg"),
+            radius: 35,
+            foregroundImage: AssetImage("lib/assets/images/robot1.png"),
           ),
           SizedBox(
             width: 12,
