@@ -1,8 +1,10 @@
 import 'package:chat_app/Screens/chatlist1.dart';
 import 'package:chat_app/Screens/splashscreen.dart';
+import 'package:chat_app/provide/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'firebase_options.dart';
 
@@ -12,7 +14,10 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const App());
+  runApp(ChangeNotifierProvider(
+    create: (context) => ThemeProvider(),
+    child: const App(),
+  ));
 }
 
 class App extends StatelessWidget {

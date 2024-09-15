@@ -1,29 +1,38 @@
 import 'package:chat_app/Screens/splashscreen.dart';
+import 'package:chat_app/provide/theme.dart';
 import 'package:chat_app/widget/chatbox.dart';
 import 'package:chat_app/widget/pagechange.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
-class Chatlist1 extends StatelessWidget {
+class Chatlist1 extends StatefulWidget {
   const Chatlist1({super.key});
 
   @override
+  State<Chatlist1> createState() => _Chatlist1State();
+}
+
+class _Chatlist1State extends State<Chatlist1> {
+  @override
   Widget build(BuildContext context) {
+    // Access the global theme provider
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     String displayName =
         "Abhay bissa is jere hehehehe and some more words to test the word limit of twelve"
             .substring(0, 12);
 
-    Color chngcolor = const Color.fromARGB(255, 31, 30, 30);
-
     return Material(
       child: Scaffold(
-        backgroundColor: chngcolor,
+        backgroundColor: themeProvider.chngcolor, // Use global background color
         appBar: AppBar(
-          backgroundColor: chngcolor,
+          backgroundColor: themeProvider.chngcolor, // Use global app bar color
           systemOverlayStyle: SystemUiOverlayStyle(
-            systemNavigationBarIconBrightness: Brightness.light,
-            statusBarColor: chngcolor, // Ensures status bar stays dark
+            systemNavigationBarIconBrightness: themeProvider
+                .statusbariconcolor, // Use global status bar icon brightness
+            statusBarColor: themeProvider.chngcolor,
           ),
           scrolledUnderElevation: 0,
           automaticallyImplyLeading: false,
@@ -46,11 +55,18 @@ class Chatlist1 extends StatelessWidget {
               },
               icon: const Icon(Icons.exit_to_app),
               color: Colors.green,
+            ),
+            IconButton(
+              onPressed: () {
+                themeProvider.toggleTheme(); // Toggle the global theme
+              },
+              icon: themeProvider.themeicon, // Use global theme icon
             )
           ],
         ),
         body: Container(
-          decoration: BoxDecoration(color: chngcolor),
+          decoration: BoxDecoration(
+              color: themeProvider.chngcolor), // Global background color
           child: Column(
             children: [
               Expanded(
@@ -60,16 +76,18 @@ class Chatlist1 extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(8.0, 0, 0, 0),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(8.0, 0, 0, 0),
                         child: Text(
                           "Recent",
-                          style: TextStyle(color: Colors.white, fontSize: 18),
+                          style: TextStyle(
+                              color: themeProvider.fontclr,
+                              fontSize: 18), // Global font color
                         ),
                       ),
                       const SizedBox(height: 12),
                       SizedBox(
-                        height: 118,
+                        height: 110,
                         child: ListView.builder(
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
@@ -84,8 +102,9 @@ class Chatlist1 extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(100),
                                     ),
                                     child: CircleAvatar(
-                                      radius: 40,
-                                      backgroundColor: chngcolor,
+                                      radius: 38,
+                                      backgroundColor: themeProvider
+                                          .chngcolor, // Avatar background based on theme
                                       foregroundImage: const AssetImage(
                                           "lib/assets/images/1.jpg"),
                                     ),
@@ -94,12 +113,16 @@ class Chatlist1 extends StatelessWidget {
                                   Container(
                                     alignment: Alignment.center,
                                     width: 100, // Set width to control wrapping
-                                    child: Text(
-                                      overflow: TextOverflow.clip,
-                                      displayName, // Display only the first 12 words
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 16),
-                                      // softWrap: true, // Allow text to wrap
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(6, 0, 0, 0),
+                                      child: Text(
+                                        overflow: TextOverflow.clip,
+                                        displayName, // Display only the first 12 words
+                                        style: TextStyle(
+                                            color: themeProvider.fontclr,
+                                            fontSize: 16), // Global font color
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -115,24 +138,25 @@ class Chatlist1 extends StatelessWidget {
               Expanded(
                 flex: 8,
                 child: Container(
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.only(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(45),
                       topRight: Radius.circular(45),
                     ),
-                    color: Colors.black,
+                    color:
+                        themeProvider.listcolor, // Global list background color
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: ListView.builder(
                       physics:
-                          ClampingScrollPhysics(), // Prevent overflow by constraining scrolling
+                          const ClampingScrollPhysics(), // Prevent overflow by constraining scrolling
                       itemCount: 20,
                       itemBuilder: (context, index) {
                         return const Column(
                           children: [
                             Padding(
-                              padding: EdgeInsets.fromLTRB(10, 1, 10, 10),
+                              padding: EdgeInsets.fromLTRB(10, 1, 10, 0),
                               child: ChatBox(),
                             ),
                             SizedBox(

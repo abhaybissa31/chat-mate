@@ -1,31 +1,34 @@
+import 'package:chat_app/provide/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ChatBox extends StatelessWidget {
   const ChatBox({super.key});
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     return Container(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        boxShadow: [
-          new BoxShadow(
+        boxShadow: const [
+          BoxShadow(
             color: Colors.grey,
             blurRadius: 1,
             // spreadRadius: 0,
           )
         ],
-        color: Color.fromARGB(255, 18, 17, 17),
+        color: themeProvider.chngcolor,
         shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(50),
       ),
-      child: const Row(
+      child: Row(
         children: [
           // Avatar
-          CircleAvatar(
+          const CircleAvatar(
             radius: 35,
             foregroundImage: AssetImage("lib/assets/images/robot1.png"),
           ),
-          SizedBox(
+          const SizedBox(
             width: 12,
           ),
           // Name and message with time aligned
@@ -40,17 +43,18 @@ class ChatBox extends StatelessWidget {
                     // Name
                     Text(
                       "Abhay",
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      style:
+                          TextStyle(color: themeProvider.fontclr, fontSize: 16),
                     ),
                     // Time aligned with the right of the name
-                    Text(
+                    const Text(
                       "12:00 PM",
                       style: TextStyle(color: Colors.grey, fontSize: 14),
                     ),
                   ],
                 ),
                 // Message below the name
-                Text(
+                const Text(
                   "heheheheheheheheheh",
                   style: TextStyle(color: Colors.grey, fontSize: 15),
                 ),
