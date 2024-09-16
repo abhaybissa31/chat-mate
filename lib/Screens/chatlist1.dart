@@ -1,3 +1,4 @@
+import 'package:chat_app/Screens/chatmsg.dart';
 import 'package:chat_app/Screens/splashscreen.dart';
 import 'package:chat_app/provide/theme.dart';
 import 'package:chat_app/widget/chatbox.dart';
@@ -153,13 +154,16 @@ class _Chatlist1State extends State<Chatlist1> {
                           const ClampingScrollPhysics(), // Prevent overflow by constraining scrolling
                       itemCount: 20,
                       itemBuilder: (context, index) {
-                        return const Column(
+                        return Column(
                           children: [
                             Padding(
-                              padding: EdgeInsets.fromLTRB(12, 1, 12, 15),
-                              child: ChatBox(),
+                              padding: const EdgeInsets.fromLTRB(12, 1, 12, 15),
+                              child: GestureDetector(
+                                  onTap: () => PageChange.changeScreen(
+                                      context, const ChatMessageScreen()),
+                                  child: const ChatBox()),
                             ),
-                            SizedBox(
+                            const SizedBox(
                                 // height: 5,
                                 )
                           ],

@@ -7,8 +7,7 @@ class ThemeProvider with ChangeNotifier {
   Color _chngcolor = const Color.fromARGB(255, 21, 21, 21);
   Color _listcolor = Colors.black;
   Color _fontclr = Colors.white; // Changed to white for dark mode
-  Brightness _statusbariconcolor =
-      Brightness.light; // Light icons for dark mode
+  Brightness _statusbariconcolor = Brightness.dark; // Light icons for dark mode
   Icon _themeicon = const Icon(
     Icons.dark_mode_sharp,
     color: Colors.white,
