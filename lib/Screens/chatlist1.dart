@@ -156,7 +156,7 @@ class _Chatlist1State extends State<Chatlist1> {
                         return const Column(
                           children: [
                             Padding(
-                              padding: EdgeInsets.fromLTRB(10, 1, 10, 0),
+                              padding: EdgeInsets.fromLTRB(12, 1, 12, 15),
                               child: ChatBox(),
                             ),
                             SizedBox(
