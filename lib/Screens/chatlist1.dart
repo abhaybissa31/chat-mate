@@ -96,37 +96,44 @@ class _Chatlist1State extends State<Chatlist1> {
                           itemBuilder: (context, index) {
                             return Padding(
                               padding: const EdgeInsets.fromLTRB(7, 5, 25, 0),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(100),
-                                    ),
-                                    child: CircleAvatar(
-                                      radius: 38,
-                                      backgroundColor: themeProvider
-                                          .chngcolor, // Avatar background based on theme
-                                      foregroundImage: const AssetImage(
-                                          "lib/assets/images/1.jpg"),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 5),
-                                  Container(
-                                    alignment: Alignment.center,
-                                    width: 100, // Set width to control wrapping
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.fromLTRB(6, 0, 0, 0),
-                                      child: Text(
-                                        overflow: TextOverflow.clip,
-                                        displayName, // Display only the first 12 words
-                                        style: TextStyle(
-                                            color: themeProvider.fontclr,
-                                            fontSize: 16), // Global font color
+                              child: GestureDetector(
+                                onTap: () => PageChange.changeScreen(
+                                    context, const ChatMessageScreen()),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                      ),
+                                      child: CircleAvatar(
+                                        radius: 38,
+                                        backgroundColor: themeProvider
+                                            .chngcolor, // Avatar background based on theme
+                                        foregroundImage: const AssetImage(
+                                            "lib/assets/images/1.jpg"),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(height: 5),
+                                    Container(
+                                      alignment: Alignment.center,
+                                      width:
+                                          100, // Set width to control wrapping
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            6, 0, 0, 0),
+                                        child: Text(
+                                          overflow: TextOverflow.clip,
+                                          displayName, // Display only the first 12 words
+                                          style: TextStyle(
+                                              color: themeProvider.fontclr,
+                                              fontSize:
+                                                  16), // Global font color
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             );
                           },
@@ -141,14 +148,14 @@ class _Chatlist1State extends State<Chatlist1> {
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(45),
-                      topRight: Radius.circular(45),
+                      topLeft: Radius.circular(80),
+                      topRight: Radius.circular(80),
                     ),
                     color:
                         themeProvider.listcolor, // Global list background color
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(10.0),
+                    padding: const EdgeInsets.fromLTRB(19.0, 19, 19, 0),
                     child: ListView.builder(
                       physics:
                           const ClampingScrollPhysics(), // Prevent overflow by constraining scrolling

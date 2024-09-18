@@ -1,5 +1,4 @@
-import 'package:chat_app/Screens/chatlist1.dart';
-import 'package:chat_app/Screens/splashscreen.dart';
+import 'package:chat_app/Screens/searchuser.dart';
 import 'package:chat_app/provide/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -40,9 +39,9 @@ class App extends StatelessWidget {
               return const CircularProgressIndicator();
             }
             if (snapshot.hasData) {
-              return const Chatlist1();
+              return const SearchUser();
             }
-            return const SplashScreen();
+            return const SearchUser();
           }),
     );
   }

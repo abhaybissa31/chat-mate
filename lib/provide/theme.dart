@@ -32,7 +32,7 @@ class ThemeProvider with ChangeNotifier {
       _themeicon = const Icon(Icons.dark_mode_sharp);
     } else {
       _chngcolor = const Color.fromARGB(255, 255, 255, 255);
-      _listcolor = const Color.fromARGB(255, 219, 219, 219);
+      _listcolor = const Color.fromARGB(255, 218, 216, 216);
       _fontclr = Colors.black;
       _statusbariconcolor = Brightness.dark; // Dark icons for light mode
       _themeicon = const Icon(Icons.light_mode_sharp, color: Colors.black);

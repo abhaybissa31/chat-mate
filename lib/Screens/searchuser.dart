@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class ChatMessageScreen extends StatefulWidget {
-  const ChatMessageScreen({super.key});
-
+class SearchUser extends StatefulWidget {
+  const SearchUser({super.key});
   @override
-  State<ChatMessageScreen> createState() => _ChatMessageScreenState();
+  State<SearchUser> createState() => _SearchUserState();
 }
 
-class _ChatMessageScreenState extends State<ChatMessageScreen> {
+class _SearchUserState extends State<SearchUser> {
+  @override
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -39,7 +39,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         children: [
           // Header section with icon, avatar, and title
           Padding(
-            padding: EdgeInsets.fromLTRB(5.0, 20, 0, 20),
+            padding: EdgeInsets.fromLTRB(5.0, 20, 45, 20),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -53,21 +53,26 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     PageChange.changeScreen(context, Chatlist1());
                   },
                 ),
-                // Add spacing between icon and avatar
-                const CircleAvatar(
-                    radius: 38, // Adjust radius to match design requirements
-                    backgroundColor: Colors.blue,
-                    foregroundImage: AssetImage(
-                        "lib/assets/images/1.jpg") // Add color to visualize the avatar
-                    ),
                 const SizedBox(
-                    width: 10), // Add spacing between avatar and text
-                Text(
-                  'Abhay',
-                  style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      color: themeProvider.fontclr),
+                    width: 10), // Add spacing between icon and search bar
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.search_sharp,
+                        color: themeProvider.listcolor,
+                      ),
+                      hintText: 'Search...',
+                      hintStyle: TextStyle(color: themeProvider.fontclr),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    style: TextStyle(color: themeProvider.fontclr),
+                  ),
                 ),
               ],
             ),
@@ -75,7 +80,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
 
           // Chat messages section
           Expanded(
-            flex: 15,
+            flex: 16,
             child: Container(
               padding: const EdgeInsets.fromLTRB(20.0, 0, 0, 0),
               decoration: BoxDecoration(
