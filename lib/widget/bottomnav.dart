@@ -43,12 +43,6 @@ class _BottomNavState extends State<BottomNav> {
     //     ),
     //     BottomNavigationBarItem(
     //       icon: Icon(
-    //         CupertinoIcons.person_3_fill,
-    //       ),
-    //       label: "People",
-    //     ),
-    //     BottomNavigationBarItem(
-    //       icon: Icon(
     //         CupertinoIcons.settings,
     //       ),
     //       label: "Settings",
