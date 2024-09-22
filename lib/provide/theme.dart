@@ -10,7 +10,7 @@ class ThemeProvider with ChangeNotifier {
   Brightness _statusbariconcolor = Brightness.dark; // Light icons for dark mode
   Icon _themeicon = const Icon(
     Icons.dark_mode_sharp,
-    color: Colors.white,
+    color: Colors.purple,
   );
 
   // Getters
@@ -29,13 +29,16 @@ class ThemeProvider with ChangeNotifier {
       _listcolor = Colors.black;
       _fontclr = Colors.white;
       _statusbariconcolor = Brightness.light; // Light icons for dark mode
-      _themeicon = const Icon(Icons.dark_mode_sharp);
+      _themeicon = const Icon(
+        Icons.dark_mode_sharp,
+        color: Colors.purple,
+      );
     } else {
       _chngcolor = const Color.fromARGB(255, 255, 255, 255);
-      _listcolor = const Color.fromARGB(255, 218, 216, 216);
-      _fontclr = Colors.black;
+      _listcolor = const Color.fromARGB(255, 234, 234, 234);
+      _fontclr = const Color.fromARGB(255, 115, 11, 134);
       _statusbariconcolor = Brightness.dark; // Dark icons for light mode
-      _themeicon = const Icon(Icons.light_mode_sharp, color: Colors.black);
+      _themeicon = const Icon(Icons.light_mode_sharp, color: Colors.purple);
     }
     notifyListeners(); // Notify listeners to rebuild with updated values
   }

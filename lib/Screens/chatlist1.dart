@@ -18,14 +18,13 @@ class Chatlist1 extends StatefulWidget {
 }
 
 class _Chatlist1State extends State<Chatlist1> {
+  String displayName =
+      "Abhay bissa is jere hehehehe and some more words to test the word limit of twelve"
+          .substring(0, 12);
   @override
   Widget build(BuildContext context) {
     // Access the global theme provider
     final themeProvider = Provider.of<ThemeProvider>(context);
-
-    String displayName =
-        "Abhay bissa is jere hehehehe and some more words to test the word limit of twelve"
-            .substring(0, 12);
 
     return Material(
       child: Scaffold(
@@ -46,7 +45,7 @@ class _Chatlist1State extends State<Chatlist1> {
           automaticallyImplyLeading: false,
           title: const Text(
             "Messages",
-            style: TextStyle(color: Colors.green),
+            style: TextStyle(color: Colors.purple),
           ),
           actions: [
             IconButton(
@@ -62,7 +61,7 @@ class _Chatlist1State extends State<Chatlist1> {
                 PageChange.changeScreen(context, const SplashScreen());
               },
               icon: const Icon(Icons.exit_to_app),
-              color: Colors.green,
+              color: Colors.purple,
             ),
             IconButton(
               onPressed: () {
@@ -178,7 +177,12 @@ class _Chatlist1State extends State<Chatlist1> {
                               child: GestureDetector(
                                   onTap: () => PageChange.changeScreen(
                                       context, const ChatMessageScreen()),
-                                  child: const ChatBox()),
+                                  child: ChatBox(
+                                    lastMsg: 'hehehe',
+                                    uname: "helloooo",
+                                    lastseen: '12.00AM',
+                                    boxtype: BoxType.chatlist,
+                                  )),
                             ),
                             const SizedBox(
                                 // height: 5,

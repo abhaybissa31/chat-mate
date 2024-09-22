@@ -38,13 +38,13 @@ class _BottomNavState extends State<BottomNav> {
         padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
         child: GNav(
             gap: 15,
-            tabActiveBorder: Border.all(color: Colors.black, width: 1.5),
+            tabActiveBorder: Border.all(color: Colors.black, width: 1),
             curve: Curves.easeInOut,
             haptic: true,
             selectedIndex: _selectedPageIndex, // Use the state value here
             onTabChange: _selectPage, // Update the tab change logic
             tabBackgroundColor: themeProvider.isDarkMode
-                ? themeProvider.chngcolor
+                ? const Color.fromARGB(255, 20, 20, 20)
                 : Colors.transparent,
             backgroundColor: themeProvider.isDarkMode
                 ? themeProvider.listcolor
@@ -53,7 +53,7 @@ class _BottomNavState extends State<BottomNav> {
             padding: const EdgeInsets.all(15),
             color: themeProvider.fontclr,
             activeColor: themeProvider.isDarkMode
-                ? Colors.green
+                ? Colors.purple
                 : const Color.fromARGB(255, 75, 29, 29),
             tabs: const [
               GButton(

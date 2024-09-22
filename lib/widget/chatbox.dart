@@ -2,11 +2,33 @@ import 'package:chat_app/provide/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+enum BoxType {
+  searchUser,
+  chatlist,
+}
+
 class ChatBox extends StatelessWidget {
-  const ChatBox({super.key});
+  ChatBox({
+    super.key,
+    required this.uname,
+    required this.lastMsg,
+    required this.boxtype,
+    this.lastseen = "",
+    this.url = "",
+  });
+  final String uname;
+  final String lastMsg;
+  final BoxType boxtype;
+  String lastseen;
+  String url;
+
   @override
   Widget build(BuildContext context) {
+    String chatboxtype = "hehe";
     final themeProvider = Provider.of<ThemeProvider>(context);
+    // if (boxtype==BoxType.searchUser) {
+
+    // }
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
@@ -24,9 +46,11 @@ class ChatBox extends StatelessWidget {
       child: Row(
         children: [
           // Avatar
-          const CircleAvatar(
+          CircleAvatar(
             radius: 35,
-            foregroundImage: AssetImage("lib/assets/images/robot1.png"),
+            foregroundImage: boxtype == BoxType.searchUser
+                ? NetworkImage(url)
+                : AssetImage("lib/assets/images/robot1.png"),
           ),
           const SizedBox(
             width: 12,
@@ -42,21 +66,26 @@ class ChatBox extends StatelessWidget {
                   children: [
                     // Name
                     Text(
-                      "Abhay",
+                      uname,
                       style:
                           TextStyle(color: themeProvider.fontclr, fontSize: 16),
                     ),
                     // Time aligned with the right of the name
-                    const Text(
-                      "12:00 PM",
-                      style: TextStyle(color: Colors.grey, fontSize: 14),
-                    ),
+                    chatboxtype == "searchUser"
+                        ? Container(
+                            child: Text('data'),
+                          )
+                        : Text(
+                            lastseen,
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 14),
+                          ),
                   ],
                 ),
                 // Message below the name
-                const Text(
-                  "heheheheheheheheheh",
-                  style: TextStyle(color: Colors.grey, fontSize: 15),
+                Text(
+                  lastMsg,
+                  style: const TextStyle(color: Colors.grey, fontSize: 15),
                 ),
               ],
             ),
