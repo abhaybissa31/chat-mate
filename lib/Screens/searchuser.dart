@@ -8,8 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class SearchUser extends StatefulWidget {
-  SearchUser({super.key, this.screenno});
-  var screenno;
+  const SearchUser({super.key, required this.screenno});
+  final int screenno;
   @override
   State<SearchUser> createState() => _SearchUserState();
 }
@@ -57,7 +57,11 @@ class _SearchUserState extends State<SearchUser> {
                     size: 30,
                   ),
                   onPressed: () {
-                    PageChange.changeScreen(context, Chatlist1());
+                    PageChange.changeScreen(
+                        context,
+                        const Chatlist1(
+                          screenno: 1,
+                        ));
                   },
                 ),
                 const SizedBox(

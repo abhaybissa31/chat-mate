@@ -10,8 +10,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class Chatlist1 extends StatefulWidget {
-  Chatlist1({super.key, this.screenno});
-  var screenno;
+  const Chatlist1({super.key, required this.screenno});
+  final int screenno;
 
   @override
   State<Chatlist1> createState() => _Chatlist1State();
@@ -72,7 +72,7 @@ class _Chatlist1State extends State<Chatlist1> {
             )
           ],
         ),
-        bottomNavigationBar: BottomNav(
+        bottomNavigationBar: const BottomNav(
           whichscreen: 0,
         ),
         body: Container(
@@ -154,7 +154,7 @@ class _Chatlist1State extends State<Chatlist1> {
                 ),
               ),
               Expanded(
-                flex: 8,
+                flex: 7,
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.only(

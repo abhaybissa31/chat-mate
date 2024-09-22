@@ -9,8 +9,8 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:provider/provider.dart';
 
 class BottomNav extends StatefulWidget {
-  BottomNav({super.key, this.whichscreen = 0});
-  int whichscreen;
+  const BottomNav({super.key, required this.whichscreen});
+  final int whichscreen;
 
   @override
   _BottomNavState createState() => _BottomNavState();
@@ -20,35 +20,16 @@ class _BottomNavState extends State<BottomNav> {
   int _selectedPageIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+    _selectedPageIndex =
+        widget.whichscreen; // Initialize with the provided screen
+  }
+
+  @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    // return BottomNavigationBar(
-    //   currentIndex: widget.whichscreen,
-    //   onTap: _selectPage,
-    //   // elevation: 20,
-    //   enableFeedback: true,
-    //   backgroundColor: themeProvider.listcolor,
-    //   unselectedItemColor: themeProvider.fontclr,
-    //   selectedItemColor: themeProvider.isDarkMode ? Colors.green : Colors.white,
-    //   selectedIconTheme: themeProvider.isDarkMode
-    //       ? const IconThemeData(color: Colors.green)
-    //       : const IconThemeData(color: Colors.white),
-    //   unselectedIconTheme: IconThemeData(color: themeProvider.fontclr),
-    //   items: const [
-    //     BottomNavigationBarItem(
-    //       icon: Icon(
-    //         CupertinoIcons.chat_bubble,
-    //       ),
-    //       label: "Messages",
-    //     ),
-    //     BottomNavigationBarItem(
-    //       icon: Icon(
-    //         CupertinoIcons.settings,
-    //       ),
-    //       label: "Settings",
-    //     ),
-    //   ],
-    // );
+
     return Container(
       color: themeProvider.isDarkMode
           ? themeProvider.listcolor
@@ -57,12 +38,11 @@ class _BottomNavState extends State<BottomNav> {
         padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10),
         child: GNav(
             gap: 15,
-            // style: GnavStyle.google,
             tabActiveBorder: Border.all(color: Colors.black, width: 1.5),
             curve: Curves.easeInOut,
             haptic: true,
-            selectedIndex: widget.whichscreen,
-            onTabChange: _selectPage,
+            selectedIndex: _selectedPageIndex, // Use the state value here
+            onTabChange: _selectPage, // Update the tab change logic
             tabBackgroundColor: themeProvider.isDarkMode
                 ? themeProvider.chngcolor
                 : Colors.transparent,
@@ -98,13 +78,14 @@ class _BottomNavState extends State<BottomNav> {
       _selectedPageIndex = index;
     });
 
-    if (_selectedPageIndex == 1) {
+    // Handle navigation after updating the state
+    if (index == 1) {
       PageChange.changeScreen(
           context,
           SearchUser(
             screenno: 1,
           ));
-    } else if (_selectedPageIndex == 2) {
+    } else if (index == 2) {
       PageChange.changeScreen(
           context,
           Setting(

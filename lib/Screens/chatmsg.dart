@@ -52,7 +52,11 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     size: 30,
                   ),
                   onPressed: () {
-                    PageChange.changeScreen(context, Chatlist1());
+                    PageChange.changeScreen(
+                        context,
+                        const Chatlist1(
+                          screenno: 1,
+                        ));
                   },
                 ),
                 // Add spacing between icon and avatar
