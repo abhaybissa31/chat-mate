@@ -8,7 +8,7 @@ enum BoxType {
 }
 
 class ChatBox extends StatelessWidget {
-  ChatBox({
+  const ChatBox({
     super.key,
     required this.uname,
     required this.lastMsg,
@@ -19,8 +19,8 @@ class ChatBox extends StatelessWidget {
   final String uname;
   final String lastMsg;
   final BoxType boxtype;
-  String lastseen;
-  String url;
+  final String? lastseen; // Make lastseen nullable if optional
+  final String url;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +76,7 @@ class ChatBox extends StatelessWidget {
                             child: Text('data'),
                           )
                         : Text(
-                            lastseen,
+                            lastseen!,
                             style: const TextStyle(
                                 color: Colors.grey, fontSize: 14),
                           ),
