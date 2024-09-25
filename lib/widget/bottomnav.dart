@@ -13,7 +13,7 @@ class BottomNav extends StatefulWidget {
   final int whichscreen;
 
   @override
-  _BottomNavState createState() => _BottomNavState();
+  State<BottomNav> createState() => _BottomNavState();
 }
 
 class _BottomNavState extends State<BottomNav> {
@@ -82,19 +82,19 @@ class _BottomNavState extends State<BottomNav> {
     if (index == 1) {
       PageChange.changeScreen(
           context,
-          SearchUser(
+          const SearchUser(
             screenno: 1,
           ));
     } else if (index == 2) {
       PageChange.changeScreen(
           context,
-          Setting(
+          const Setting(
             screeno: 2,
           ));
     } else {
       PageChange.changeScreen(
           context,
-          Chatlist1(
+          const Chatlist1(
             screenno: 0,
           ));
     }

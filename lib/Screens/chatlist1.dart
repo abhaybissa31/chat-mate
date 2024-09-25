@@ -107,7 +107,12 @@ class _Chatlist1State extends State<Chatlist1> {
                               padding: const EdgeInsets.fromLTRB(7, 5, 25, 0),
                               child: GestureDetector(
                                 onTap: () => PageChange.changeScreen(
-                                    context, const ChatMessageScreen()),
+                                    context,
+                                    const ChatMessageScreen(
+                                      recEmail: 'bissa',
+                                      recImageUrl: '',
+                                      recUname: 'itsabhay yo boi',
+                                    )),
                                 child: Column(
                                   children: [
                                     Container(
@@ -176,8 +181,13 @@ class _Chatlist1State extends State<Chatlist1> {
                               padding: const EdgeInsets.fromLTRB(12, 1, 12, 15),
                               child: GestureDetector(
                                   onTap: () => PageChange.changeScreen(
-                                      context, const ChatMessageScreen()),
-                                  child: ChatBox(
+                                      context,
+                                      const ChatMessageScreen(
+                                        recEmail: 'bissa',
+                                        recImageUrl: '',
+                                        recUname: 'itsabhay yo boi',
+                                      )),
+                                  child: const ChatBox(
                                     lastMsg: 'hehehe',
                                     uname: "helloooo",
                                     lastseen: '12.00AM',

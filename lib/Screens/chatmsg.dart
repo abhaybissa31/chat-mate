@@ -7,8 +7,14 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class ChatMessageScreen extends StatefulWidget {
-  const ChatMessageScreen({super.key});
-
+  const ChatMessageScreen(
+      {super.key,
+      required this.recUname,
+      required this.recEmail,
+      required this.recImageUrl});
+  final String recUname;
+  final String recEmail;
+  final String recImageUrl;
   @override
   State<ChatMessageScreen> createState() => _ChatMessageScreenState();
 }
@@ -60,16 +66,18 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                   },
                 ),
                 // Add spacing between icon and avatar
-                const CircleAvatar(
+                CircleAvatar(
                     radius: 38, // Adjust radius to match design requirements
                     backgroundColor: Colors.blue,
-                    foregroundImage: AssetImage(
-                        "lib/assets/images/1.jpg") // Add color to visualize the avatar
+                    foregroundImage: widget.recImageUrl.toString().isEmpty
+                        ? const AssetImage("lib/assets/images/1.jpg")
+                        : NetworkImage(widget
+                            .recImageUrl) // Add color to visualize the avatar
                     ),
                 const SizedBox(
                     width: 10), // Add spacing between avatar and text
                 Text(
-                  'Abhay',
+                  widget.recUname,
                   style: TextStyle(
                       fontSize: 25,
                       fontWeight: FontWeight.bold,
