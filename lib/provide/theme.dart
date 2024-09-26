@@ -7,7 +7,7 @@ class ThemeProvider with ChangeNotifier {
   Color _chngcolor = const Color.fromARGB(255, 21, 21, 21);
   Color _listcolor = Colors.black;
   Color _fontclr = Colors.white; // Changed to white for dark mode
-  Brightness _statusbariconcolor = Brightness.dark; // Light icons for dark mode
+  Color _altfontclr = Colors.purple;
   Icon _themeicon = const Icon(
     Icons.dark_mode_sharp,
     color: Colors.purple,
@@ -18,7 +18,7 @@ class ThemeProvider with ChangeNotifier {
   Color get chngcolor => _chngcolor;
   Color get listcolor => _listcolor;
   Color get fontclr => _fontclr;
-  Brightness get statusbariconcolor => _statusbariconcolor;
+  Color get altfontclt => _altfontclr;
   Icon get themeicon => _themeicon;
 
   // Toggle the theme and update colors
@@ -28,7 +28,6 @@ class ThemeProvider with ChangeNotifier {
       _chngcolor = const Color.fromARGB(255, 21, 21, 21);
       _listcolor = Colors.black;
       _fontclr = Colors.white;
-      _statusbariconcolor = Brightness.light; // Light icons for dark mode
       _themeicon = const Icon(
         Icons.dark_mode_sharp,
         color: Colors.purple,
@@ -37,7 +36,6 @@ class ThemeProvider with ChangeNotifier {
       _chngcolor = const Color.fromARGB(255, 255, 255, 255);
       _listcolor = const Color.fromARGB(255, 234, 234, 234);
       _fontclr = const Color.fromARGB(255, 115, 11, 134);
-      _statusbariconcolor = Brightness.dark; // Dark icons for light mode
       _themeicon = const Icon(Icons.light_mode_sharp, color: Colors.purple);
     }
     notifyListeners(); // Notify listeners to rebuild with updated values

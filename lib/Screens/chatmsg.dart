@@ -1,6 +1,7 @@
 import 'package:chat_app/Screens/chatlist.dart';
 import 'package:chat_app/Screens/searchuser.dart';
 import 'package:chat_app/provide/theme.dart';
+import 'package:chat_app/widget/chatbubble.dart';
 import 'package:chat_app/widget/pagechange.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,14 +51,76 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
           preferredSize: const Size.fromHeight(0.0), // Set height to 0
           child: AppBar(
             systemOverlayStyle: SystemUiOverlayStyle(
-              statusBarIconBrightness: themeProvider
-                  .statusbariconcolor, // Correct property for status bar icons
-              statusBarColor:
-                  themeProvider.chngcolor, // Change status bar color
-              systemNavigationBarIconBrightness: themeProvider
-                  .statusbariconcolor, // Still applies to navigation bar icons
-            ),
-            backgroundColor: Colors.yellow,
+                statusBarIconBrightness: themeProvider.isDarkMode == true
+                    ? Brightness.light
+                    : Brightness.dark, // Correct property for status bar icons
+                statusBarColor:
+                    themeProvider.chngcolor, // Change status bar color
+                systemNavigationBarIconBrightness:
+                    themeProvider.isDarkMode == true
+                        ? Brightness.light
+                        : Brightness.dark,
+                systemNavigationBarColor: themeProvider
+                    .listcolor // Still applies to navigation bar icons
+                ),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Container(
+          margin: const EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+          decoration: BoxDecoration(
+              color: themeProvider.chngcolor,
+              borderRadius: BorderRadius.circular(100)),
+          child: Row(
+            children: [
+              SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: Icon(
+                    CupertinoIcons.mic_fill,
+                    color: themeProvider.altfontclt,
+                  )),
+              const SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                  child: TextField(
+                minLines: 1,
+                maxLines: 3,
+                enableIMEPersonalizedLearning: true,
+                enableInteractiveSelection: true,
+                keyboardType: TextInputType.text,
+                style: TextStyle(fontSize: 18, color: themeProvider.fontclr),
+                decoration: const InputDecoration(
+                  filled: false,
+                  contentPadding: EdgeInsets.all(7),
+                  enabledBorder: InputBorder.none,
+                  border: InputBorder.none,
+                  hintText: "Message",
+                ),
+              )),
+              const SizedBox(
+                width: 10,
+              ),
+              SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: Icon(
+                    CupertinoIcons.photo_fill_on_rectangle_fill,
+                    color: themeProvider.altfontclt,
+                  )),
+              const SizedBox(
+                width: 10,
+              ),
+              SizedBox(
+                  height: 30,
+                  width: 30,
+                  child: Icon(
+                    Icons.send,
+                    color: themeProvider.altfontclt,
+                  ))
+            ],
           ),
         ),
         backgroundColor: themeProvider.chngcolor,
@@ -72,7 +135,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                   IconButton(
                     icon: Icon(
                       CupertinoIcons.arrow_uturn_left,
-                      color: themeProvider.fontclr,
+                      color: themeProvider.altfontclt,
                       size: 30,
                     ),
                     onPressed: () {
@@ -97,10 +160,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                       width: 10), // Add spacing between avatar and text
                   Text(
                     widget.recUname,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
-                        color: themeProvider.fontclr),
+                        color: Colors.purple),
                   ),
                 ],
               ),
@@ -110,33 +173,44 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
             Expanded(
               flex: 15,
               child: Container(
-                padding: const EdgeInsets.fromLTRB(20.0, 0, 0, 0),
-                decoration: BoxDecoration(
-                  color: themeProvider
-                      .listcolor, // Softer grey color for better visibility
-                  borderRadius: const BorderRadius.only(
-                    topLeft:
-                        Radius.circular(80.0), // Adjust the radius as needed
-                    topRight: Radius.circular(80.0),
+                  padding: const EdgeInsets.fromLTRB(15.0, 0, 15, 0),
+                  decoration: BoxDecoration(
+                    color: themeProvider
+                        .listcolor, // Softer grey color for better visibility
+                    borderRadius: const BorderRadius.only(
+                      topLeft:
+                          Radius.circular(80.0), // Adjust the radius as needed
+                      topRight: Radius.circular(80.0),
+                    ),
                   ),
-                ),
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(25.0),
-                  itemCount: 10,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Text(
-                        "Message ${(index + 1)}",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: themeProvider.fontclr,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
+                  child: ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(5, 15, 5, 0),
+                      itemCount: 1,
+                      itemBuilder: (context, index) {
+                        return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ChatBubble(
+                                  message:
+                                      "Lorem ipsum and the rest message resides here, so once again lorem ipsum",
+                                  receiving: true,
+                                  status: "read",
+                                  time: "10am",
+                                  mediaUrl: "",
+                                ),
+                                ChatBubble(
+                                  message:
+                                      "Lorem ipsum and the rest message resides here, so once again lorem ipsum",
+                                  receiving: false,
+                                  status: "read",
+                                  time: "10am",
+                                  mediaUrl: "lib/assets/images/1.jpg",
+                                )
+                              ],
+                            ));
+                      })),
             ),
           ],
         ),

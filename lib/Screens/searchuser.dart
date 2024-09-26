@@ -33,11 +33,13 @@ class _SearchUserState extends State<SearchUser> {
         preferredSize: const Size.fromHeight(0.0), // Set height to 0
         child: AppBar(
           systemOverlayStyle: SystemUiOverlayStyle(
-            statusBarIconBrightness: themeProvider
-                .statusbariconcolor, // Correct property for status bar icons
+            statusBarIconBrightness: themeProvider.isDarkMode == true
+                ? Brightness.light
+                : Brightness.dark, // Correct property for status bar icons
             statusBarColor: themeProvider.chngcolor, // Change status bar color
-            systemNavigationBarIconBrightness: themeProvider
-                .statusbariconcolor, // Still applies to navigation bar icons
+            systemNavigationBarIconBrightness: themeProvider.isDarkMode == true
+                ? Brightness.light
+                : Brightness.dark, // Still applies to navigation bar icons
           ),
           // backgroundColor: Colors.yellow,
         ),
@@ -150,7 +152,7 @@ class _SearchUserState extends State<SearchUser> {
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: GestureDetector(
-                                  onTap: () => PageChange.changeScreen(
+                                  onTap: () async => PageChange.changeScreen(
                                     context,
                                     ChatMessageScreen(
                                       recEmail: data['email'],
@@ -176,7 +178,7 @@ class _SearchUserState extends State<SearchUser> {
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: GestureDetector(
-                                  onTap: () => PageChange.changeScreen(
+                                  onTap: () async => PageChange.changeScreen(
                                     context,
                                     ChatMessageScreen(
                                       recEmail: data['email'],

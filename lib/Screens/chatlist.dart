@@ -35,11 +35,13 @@ class _Chatlist1State extends State<Chatlist1> {
             systemNavigationBarColor: themeProvider.isDarkMode
                 ? Colors.purple
                 : themeProvider.chngcolor,
-            statusBarIconBrightness: themeProvider
-                .statusbariconcolor, // Correct property for status bar icons
+            statusBarIconBrightness: themeProvider.isDarkMode == true
+                ? Brightness.light
+                : Brightness.dark, // Correct property for status bar icons
             statusBarColor: themeProvider.chngcolor, // Change status bar color
-            systemNavigationBarIconBrightness: themeProvider
-                .statusbariconcolor, // Still applies to navigation bar icons
+            systemNavigationBarIconBrightness: themeProvider.isDarkMode == true
+                ? Brightness.light
+                : Brightness.dark, // Still applies to navigation bar icons
           ),
           scrolledUnderElevation: 0,
           automaticallyImplyLeading: false,
@@ -108,7 +110,7 @@ class _Chatlist1State extends State<Chatlist1> {
                             return Padding(
                               padding: const EdgeInsets.fromLTRB(7, 5, 25, 0),
                               child: GestureDetector(
-                                onTap: () => PageChange.changeScreen(
+                                onTap: () async => PageChange.changeScreen(
                                     context,
                                     const ChatMessageScreen(
                                       recEmail: 'bissa',
@@ -184,7 +186,7 @@ class _Chatlist1State extends State<Chatlist1> {
                             Padding(
                               padding: const EdgeInsets.fromLTRB(12, 1, 12, 15),
                               child: GestureDetector(
-                                  onTap: () => PageChange.changeScreen(
+                                  onTap: () async => PageChange.changeScreen(
                                       context,
                                       const ChatMessageScreen(
                                         recEmail: 'bissa',
