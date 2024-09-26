@@ -1,4 +1,4 @@
-import 'package:chat_app/Screens/chatlist1.dart';
+import 'package:chat_app/Screens/chatlist.dart';
 import 'package:chat_app/Screens/searchuser.dart';
 import 'package:chat_app/Screens/setting.dart';
 import 'package:chat_app/provide/theme.dart';

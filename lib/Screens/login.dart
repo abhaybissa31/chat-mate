@@ -1,4 +1,4 @@
-import 'package:chat_app/Screens/chatlist1.dart';
+import 'package:chat_app/Screens/chatlist.dart';
 import 'package:chat_app/Screens/singup.dart';
 import 'package:chat_app/widget/pagechange.dart';
 import 'package:firebase_auth/firebase_auth.dart';

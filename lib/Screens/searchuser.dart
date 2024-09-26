@@ -1,4 +1,4 @@
-import 'package:chat_app/Screens/chatlist1.dart';
+import 'package:chat_app/Screens/chatlist.dart';
 import 'package:chat_app/Screens/chatmsg.dart';
 import 'package:chat_app/provide/theme.dart';
 import 'package:chat_app/widget/bottomnav.dart';
@@ -19,6 +19,7 @@ class SearchUser extends StatefulWidget {
 
 class _SearchUserState extends State<SearchUser> {
   String name = '';
+  bool hasPrinted = false;
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
@@ -113,132 +114,109 @@ class _SearchUserState extends State<SearchUser> {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(0, 20, 0, 0),
                 child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection("users")
-                        .snapshots(),
-                    builder: (context, snapshots) {
-                      return (snapshots.connectionState ==
-                                  ConnectionState.waiting ||
-                              snapshots.connectionState == ConnectionState.none)
-                          ? Center(
-                              child: Center(
-                                child: Text(
-                                  "No users found",
-                                  style:
-                                      TextStyle(color: themeProvider.fontclr),
+                  stream: FirebaseFirestore.instance
+                      .collection("users")
+                      .snapshots(),
+                  builder: (context, snapshots) {
+                    if (snapshots.connectionState == ConnectionState.waiting ||
+                        snapshots.connectionState == ConnectionState.none) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          backgroundColor: Colors.purple,
+                        ),
+                      );
+                    } else {
+                      // Check if there are no documents
+                      if (snapshots.data!.docs.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            'No user found',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ),
+                        );
+                      } else {
+                        bool userFound = false;
+
+                        return ListView.builder(
+                          itemCount: snapshots.data!.docs.length > 10
+                              ? 10
+                              : snapshots.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            var data = snapshots.data!.docs[index].data()
+                                as Map<String, dynamic>;
+
+                            if (name.isEmpty) {
+                              userFound = true; // User found in the list
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: GestureDetector(
+                                  onTap: () => PageChange.changeScreen(
+                                    context,
+                                    ChatMessageScreen(
+                                      recEmail: data['email'],
+                                      recImageUrl: data['image_url'],
+                                      recUname: data['username'],
+                                      chatMessageNavigatedFrom:
+                                          ChatMessageNavigatedFrom.searchuser,
+                                    ),
+                                  ),
+                                  child: ChatBox(
+                                    boxtype: BoxType.searchUser,
+                                    uname: data['username'],
+                                    lastMsg: data['email'],
+                                    url: data['image_url'],
+                                  ),
                                 ),
-                              ),
-                            )
-                          : ListView.builder(
-                              itemCount: snapshots.data!.docs.length > 10
-                                  ? 10
-                                  : snapshots.data!.docs.length,
-                              itemBuilder: (context, index) {
-                                var data = snapshots.data!.docs[index].data()
-                                    as Map<String, dynamic>;
-                                if (name.isEmpty) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: GestureDetector(
-                                      onTap: () => PageChange.changeScreen(
-                                          context,
-                                          ChatMessageScreen(
-                                            recEmail: data['email'],
-                                            recImageUrl: data['image_url'],
-                                            recUname: data['username'],
-                                          )),
-                                      child: ChatBox(
-                                        boxtype: BoxType.searchUser,
-                                        uname: data['username'],
-                                        lastMsg: data['email'],
-                                        url: data['image_url'],
-                                      ),
+                              );
+                            } else if (data['username']
+                                .toString()
+                                .toLowerCase()
+                                .startsWith(name.toLowerCase())) {
+                              userFound = true; // User found in the search
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: GestureDetector(
+                                  onTap: () => PageChange.changeScreen(
+                                    context,
+                                    ChatMessageScreen(
+                                      recEmail: data['email'],
+                                      recImageUrl: data['image_url'],
+                                      recUname: data['username'],
+                                      chatMessageNavigatedFrom:
+                                          ChatMessageNavigatedFrom.searchuser,
                                     ),
-                                  );
-                                  // return ListTile(
-                                  //   title: Text(
-                                  //     data['username'] ??
-                                  //         'No Username', // Fallback value if 'username' is null
-                                  //     maxLines: 1,
-                                  //     overflow: TextOverflow.ellipsis,
-                                  //     style: TextStyle(
-                                  //         color: themeProvider.fontclr,
-                                  //         fontSize: 16,
-                                  //         fontWeight: FontWeight.bold),
-                                  //   ),
-                                  //   subtitle: Text(
-                                  //     data['email'] ??
-                                  //         'No Email', // Fallback value if 'email' is null
-                                  //     maxLines: 1,
-                                  //     overflow: TextOverflow.ellipsis,
-                                  //     style: const TextStyle(
-                                  //         color: Colors.grey,
-                                  //         fontSize: 16,
-                                  //         fontWeight: FontWeight.bold),
-                                  //   ),
-                                  //   leading: CircleAvatar(
-                                  //     radius: 40,
-                                  //     backgroundImage: data['image_url'] != null
-                                  //         ? NetworkImage(data[
-                                  //             'image_url']) // If 'image_url' is present
-                                  //         : const AssetImage(
-                                  //             'assets/default_avatar.png'), // Default image if null
-                                  //   ),
-                                  // );
-                                }
-                                if (data['username']
-                                    .toString()
-                                    .toLowerCase()
-                                    .startsWith(name.toLowerCase())) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: GestureDetector(
-                                      onTap: () => PageChange.changeScreen(
-                                          context,
-                                          ChatMessageScreen(
-                                            recEmail: data['email'],
-                                            recImageUrl: data['image_url'],
-                                            recUname: data['username'],
-                                          )),
-                                      child: ChatBox(
-                                        boxtype: BoxType.searchUser,
-                                        uname: data['username'],
-                                        lastMsg: data['email'],
-                                        url: data['image_url'],
-                                      ),
-                                    ),
-                                  );
-                                  // return ListTile(
-                                  //   title: Text(
-                                  //     data['username'],
-                                  //     maxLines: 1,
-                                  //     overflow: TextOverflow.ellipsis,
-                                  //     style: TextStyle(
-                                  //         color: themeProvider.fontclr,
-                                  //         fontSize: 16,
-                                  //         fontWeight: FontWeight.bold),
-                                  //   ),
-                                  //   subtitle: Text(
-                                  //     data['email'],
-                                  //     maxLines: 1,
-                                  //     overflow: TextOverflow.ellipsis,
-                                  //     style: const TextStyle(
-                                  //         color: Colors.grey,
-                                  //         fontSize: 16,
-                                  //         fontWeight: FontWeight.bold),
-                                  //   ),
-                                  //   leading: CircleAvatar(
-                                  //     radius: 40,
-                                  //     backgroundImage:
-                                  //         NetworkImage(data['image_url']),
-                                  //   ),
-                                  // );
-                                } else {
-                                  return Container();
-                                }
-                              });
-                    }),
+                                  ),
+                                  child: ChatBox(
+                                    boxtype: BoxType.searchUser,
+                                    uname: data['username'],
+                                    lastMsg: data['email'],
+                                    url: data['image_url'],
+                                  ),
+                                ),
+                              );
+                            }
+
+                            // After all users are checked, show "No user found"
+                            if (index == snapshots.data!.docs.length - 1 &&
+                                !userFound) {
+                              return const Center(
+                                heightFactor: 25,
+                                child: Text(
+                                  'No user found',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
+                                ),
+                              );
+                            }
+                            return const SizedBox(); // If not a match, return empty widget
+                          },
+                        );
+                      }
+                    }
+                  },
+                ),
               ),
+
               // child: ListView.builder(
               //   padding: const EdgeInsets.all(25.0),
               //   itemCount: 10,

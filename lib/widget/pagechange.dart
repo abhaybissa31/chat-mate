@@ -4,7 +4,7 @@ class PageChange {
   // Static method for screen navigation
   static void changeScreen(BuildContext context, Widget page) {
     ScaffoldMessenger.of(context).clearSnackBars();
-    Navigator.of(context).pushReplacement(
+    Navigator.of(context).push(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) => page,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {

@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chat_app/Screens/chatlist1.dart';
+import 'package:chat_app/Screens/chatlist.dart';
 import 'package:chat_app/Screens/login.dart';
 import 'package:chat_app/widget/pagechange.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
