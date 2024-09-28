@@ -38,32 +38,38 @@ class _SingupscreenState extends State<Singupscreen> {
         setState(() {
           isAuthenticating = true;
         });
+
         final userCredentials = await _firebase.createUserWithEmailAndPassword(
           email: enteredEmail,
           password: enteredPass,
         );
         print(userCredentials);
 
-        final storageRef = FirebaseStorage.instance
-            .ref()
-            .child('user_images')
-            .child(userCredentials.user!.uid);
+        String? imageUrl;
 
-// Upload the file
-        await storageRef.putFile(_pickedImageFile!);
+        if (_pickedImageFile != null) {
+          final storageRef = FirebaseStorage.instance
+              .ref()
+              .child('user_images')
+              .child(userCredentials.user!.uid);
 
-// Await the download URL
-        final imageUrl = await storageRef.getDownloadURL();
-        print(imageUrl);
+          // Upload the file
+          await storageRef.putFile(_pickedImageFile!);
 
-// Store user data in Firestore
+          // Await the download URL
+          imageUrl = await storageRef.getDownloadURL();
+          print(imageUrl);
+        }
+
+        // Store user data in Firestore
         await FirebaseFirestore.instance
             .collection('users')
             .doc(userCredentials.user!.uid)
             .set({
           'username': enteredUsername,
           'email': enteredEmail,
-          'image_url': imageUrl,
+          'image_url': imageUrl ?? "", // Use empty string if imageUrl is null
+          'id': userCredentials.user!.uid,
         });
 
         ScaffoldMessenger.of(context).clearMaterialBanners();
@@ -76,7 +82,7 @@ class _SingupscreenState extends State<Singupscreen> {
                 Text(
                   "ChatMate",
                   style: TextStyle(color: Colors.green),
-                )
+                ),
               ],
             ),
           ),
@@ -104,9 +110,9 @@ class _SingupscreenState extends State<Singupscreen> {
         // Handle any other unexpected errors
         print('Unexpected error: $e');
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             backgroundColor: Colors.black,
-            content: Text('An unexpected error occurred. Please try again.'),
+            content: Text('An unexpected error occurred. Please try again. $e'),
           ),
         );
         setState(() {

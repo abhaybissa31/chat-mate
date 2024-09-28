@@ -1,5 +1,6 @@
 import 'package:chat_app/Screens/chatlist.dart';
 import 'package:chat_app/Screens/searchuser.dart';
+import 'package:chat_app/controller/chatcontroller.dart';
 import 'package:chat_app/provide/theme.dart';
 import 'package:chat_app/widget/chatbubble.dart';
 import 'package:chat_app/widget/pagechange.dart';
@@ -14,13 +15,15 @@ class ChatMessageScreen extends StatefulWidget {
   const ChatMessageScreen(
       {super.key,
       required this.recUname,
+      required this.recId,
       required this.recEmail,
       required this.recImageUrl,
       required this.chatMessageNavigatedFrom});
   final ChatMessageNavigatedFrom chatMessageNavigatedFrom;
   final String recUname;
+  final String recId;
   final String recEmail;
-  final String recImageUrl;
+  final String? recImageUrl;
   @override
   State<ChatMessageScreen> createState() => _ChatMessageScreenState();
 }
@@ -28,6 +31,10 @@ class ChatMessageScreen extends StatefulWidget {
 class _ChatMessageScreenState extends State<ChatMessageScreen> {
   @override
   Widget build(BuildContext context) {
+    Chatcontroller chatController = Chatcontroller();
+    TextEditingController messageController = TextEditingController();
+    print('widget urllllll');
+    print(widget.recImageUrl);
     final themeProvider = Provider.of<ThemeProvider>(context);
     void initState() {
       super.initState();
@@ -86,6 +93,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
               ),
               Expanded(
                   child: TextField(
+                controller: messageController,
                 minLines: 1,
                 maxLines: 3,
                 enableIMEPersonalizedLearning: true,
@@ -116,9 +124,20 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
               SizedBox(
                   height: 30,
                   width: 30,
-                  child: Icon(
-                    Icons.send,
-                    color: themeProvider.altfontclt,
+                  child: InkWell(
+                    splashFactory: InkSplash.splashFactory,
+                    splashColor: Colors.grey,
+                    enableFeedback: true,
+                    onTap: () {
+                      if (messageController.text.isNotEmpty) {
+                        chatController.sendMessage(
+                            widget.recId, messageController.text);
+                      }
+                    },
+                    child: Icon(
+                      Icons.send,
+                      color: themeProvider.altfontclt,
+                    ),
                   ))
             ],
           ),
@@ -149,13 +168,16 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                   ),
                   // Add spacing between icon and avatar
                   CircleAvatar(
-                      radius: 38, // Adjust radius to match design requirements
-                      backgroundColor: Colors.blue,
-                      foregroundImage: widget.recImageUrl.toString().isEmpty
-                          ? const AssetImage("lib/assets/images/1.jpg")
-                          : NetworkImage(widget
-                              .recImageUrl) // Add color to visualize the avatar
-                      ),
+                    radius: 38, // Adjust radius to match design requirements
+                    backgroundColor: Colors.blue,
+                    foregroundImage: (widget.recImageUrl != null &&
+                            widget.recImageUrl != "lib/assets/images/1.jpg")
+                        ? NetworkImage(widget.recImageUrl!)
+                        : AssetImage("lib/assets/images/1.jpg")
+                            as ImageProvider,
+
+                    // Add color to visualize the avatar
+                  ),
                   const SizedBox(
                       width: 10), // Add spacing between avatar and text
                   Text(

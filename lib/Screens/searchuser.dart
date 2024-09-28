@@ -1,5 +1,6 @@
 import 'package:chat_app/Screens/chatlist.dart';
 import 'package:chat_app/Screens/chatmsg.dart';
+import 'package:chat_app/controller/chatcontroller.dart';
 import 'package:chat_app/provide/theme.dart';
 import 'package:chat_app/widget/bottomnav.dart';
 import 'package:chat_app/widget/chatbox.dart';
@@ -20,8 +21,11 @@ class SearchUser extends StatefulWidget {
 class _SearchUserState extends State<SearchUser> {
   String name = '';
   bool hasPrinted = false;
+
   @override
   Widget build(BuildContext context) {
+    Chatcontroller chatController = Chatcontroller();
+
     final themeProvider = Provider.of<ThemeProvider>(context);
     void initState() {
       super.initState();
@@ -152,21 +156,33 @@ class _SearchUserState extends State<SearchUser> {
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: GestureDetector(
-                                  onTap: () async => PageChange.changeScreen(
-                                    context,
-                                    ChatMessageScreen(
-                                      recEmail: data['email'],
-                                      recImageUrl: data['image_url'],
-                                      recUname: data['username'],
-                                      chatMessageNavigatedFrom:
-                                          ChatMessageNavigatedFrom.searchuser,
-                                    ),
-                                  ),
+                                  onTap: () {
+                                    String roomID =
+                                        chatController.getRoomId(data['id']);
+                                    print(roomID);
+                                    PageChange.changeScreen(
+                                      context,
+                                      ChatMessageScreen(
+                                        recEmail: data['email'],
+                                        recId: data['id'],
+                                        recImageUrl: data['image_url']
+                                                .toString()
+                                                .isEmpty
+                                            ? "lib/assets/images/1.jpg" // Pass this only if you handle it as an asset
+                                            : data['image_url'],
+                                        recUname: data['username'],
+                                        chatMessageNavigatedFrom:
+                                            ChatMessageNavigatedFrom.searchuser,
+                                      ),
+                                    );
+                                  },
                                   child: ChatBox(
                                     boxtype: BoxType.searchUser,
                                     uname: data['username'],
                                     lastMsg: data['email'],
-                                    url: data['image_url'],
+                                    url: data['image_url'].toString().isEmpty
+                                        ? "lib/assets/images/1.jpg"
+                                        : data['image_url'],
                                   ),
                                 ),
                               );
@@ -182,7 +198,12 @@ class _SearchUserState extends State<SearchUser> {
                                     context,
                                     ChatMessageScreen(
                                       recEmail: data['email'],
-                                      recImageUrl: data['image_url'],
+                                      recId: data['id'],
+                                      recImageUrl: data['image_url']
+                                              .toString()
+                                              .isEmpty
+                                          ? "lib/assets/images/1.jpg" // Pass this only if you handle it as an asset
+                                          : data['image_url'],
                                       recUname: data['username'],
                                       chatMessageNavigatedFrom:
                                           ChatMessageNavigatedFrom.searchuser,
@@ -192,7 +213,9 @@ class _SearchUserState extends State<SearchUser> {
                                     boxtype: BoxType.searchUser,
                                     uname: data['username'],
                                     lastMsg: data['email'],
-                                    url: data['image_url'],
+                                    url: data['image_url'].toString().isEmpty
+                                        ? "lib/assets/images/1.jpg"
+                                        : data['image_url'],
                                   ),
                                 ),
                               );

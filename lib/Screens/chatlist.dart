@@ -113,6 +113,7 @@ class _Chatlist1State extends State<Chatlist1> {
                                 onTap: () async => PageChange.changeScreen(
                                     context,
                                     const ChatMessageScreen(
+                                      recId: "",
                                       recEmail: 'bissa',
                                       recImageUrl: '',
                                       recUname: 'itsabhay yo boi',
@@ -189,13 +190,14 @@ class _Chatlist1State extends State<Chatlist1> {
                                   onTap: () async => PageChange.changeScreen(
                                       context,
                                       const ChatMessageScreen(
+                                        recId: "00",
                                         recEmail: 'bissa',
                                         recImageUrl: '',
                                         recUname: 'itsabhay yo boi',
                                         chatMessageNavigatedFrom:
                                             ChatMessageNavigatedFrom.chatlist,
                                       )),
-                                  child: const ChatBox(
+                                  child: ChatBox(
                                     lastMsg: 'hehehe',
                                     uname: "helloooo",
                                     lastseen: '12.00AM',

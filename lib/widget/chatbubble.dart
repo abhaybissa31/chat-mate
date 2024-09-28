@@ -1,5 +1,6 @@
 import 'package:chat_app/provide/theme.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ChatBubble extends StatelessWidget {
@@ -45,7 +46,8 @@ class ChatBubble extends StatelessWidget {
                         bottomRight: Radius.circular(0),
                       ),
               ),
-              child: mediaUrl == ""
+              // Inside the ChatBubble widget
+              child: mediaUrl.isEmpty
                   ? Text(
                       message,
                       style: TextStyle(
@@ -55,10 +57,18 @@ class ChatBubble extends StatelessWidget {
                       children: [
                         ClipRRect(
                             borderRadius: BorderRadius.circular(10),
-                            child: Image.asset(mediaUrl)),
-                        const SizedBox(
-                          height: 10,
-                        ),
+                            child: mediaUrl.startsWith(
+                                    'lib/assets/') // Check for valid asset path
+                                ? Image.asset(mediaUrl)
+                                : Container(
+                                    // Handle invalid mediaUrl case
+                                    height:
+                                        100, // Default height or placeholder
+                                    color: Colors.grey,
+                                    child: const Center(
+                                        child: Text('Invalid image')),
+                                  )),
+                        const SizedBox(height: 10),
                         Text(
                           message,
                           style: TextStyle(
@@ -70,17 +80,22 @@ class ChatBubble extends StatelessWidget {
             height: 10,
           ),
           receiving
-              ? Text(time)
+              ? Text(
+                  time,
+                  style: TextStyle(color: themeProvider.altfontclt),
+                )
               : Row(
                   mainAxisAlignment: receiving
                       ? MainAxisAlignment.start
                       : MainAxisAlignment.end,
                   children: [
-                    const Icon(
+                    Icon(
                       CupertinoIcons.checkmark_circle,
+                      color: themeProvider.altfontclt,
                       size: 20,
                     ),
-                    Text(time)
+                    Text(time,
+                        style: TextStyle(color: themeProvider.altfontclt))
                   ],
                 )
         ],

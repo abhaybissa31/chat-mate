@@ -8,7 +8,7 @@ enum BoxType {
 }
 
 class ChatBox extends StatelessWidget {
-  const ChatBox({
+  ChatBox({
     super.key,
     required this.uname,
     required this.lastMsg,
@@ -20,7 +20,7 @@ class ChatBox extends StatelessWidget {
   final String lastMsg;
   final BoxType boxtype;
   final String? lastseen; // Make lastseen nullable if optional
-  final String url;
+  dynamic url;
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +48,11 @@ class ChatBox extends StatelessWidget {
           // Avatar
           CircleAvatar(
             radius: 35,
-            foregroundImage: boxtype == BoxType.searchUser
-                ? NetworkImage(url)
-                : AssetImage("lib/assets/images/robot1.png"),
+            foregroundImage: url.toString() == "lib/assets/images/1.jpg" ||
+                    url.toString() == "" ||
+                    url.toString().isEmpty
+                ? AssetImage("lib/assets/images/robot1.png")
+                : NetworkImage(url),
           ),
           const SizedBox(
             width: 12,
