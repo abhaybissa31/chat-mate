@@ -33,8 +33,6 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   Widget build(BuildContext context) {
     Chatcontroller chatController = Chatcontroller();
     TextEditingController messageController = TextEditingController();
-    print('widget urllllll');
-    print(widget.recImageUrl);
     final themeProvider = Provider.of<ThemeProvider>(context);
     void initState() {
       super.initState();
@@ -171,7 +169,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     radius: 38, // Adjust radius to match design requirements
                     backgroundColor: Colors.blue,
                     foregroundImage: (widget.recImageUrl != null &&
-                            widget.recImageUrl != "lib/assets/images/1.jpg")
+                                widget.recImageUrl !=
+                                    "lib/assets/images/1.jpg" ||
+                            widget.recImageUrl == '')
                         ? NetworkImage(widget.recImageUrl!)
                         : AssetImage("lib/assets/images/1.jpg")
                             as ImageProvider,

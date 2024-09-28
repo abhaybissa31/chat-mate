@@ -115,7 +115,7 @@ class _Chatlist1State extends State<Chatlist1> {
                                     const ChatMessageScreen(
                                       recId: "",
                                       recEmail: 'bissa',
-                                      recImageUrl: '',
+                                      recImageUrl: 'lib/assets/images/1.jpg',
                                       recUname: 'itsabhay yo boi',
                                       chatMessageNavigatedFrom:
                                           ChatMessageNavigatedFrom.chatlist,
@@ -192,7 +192,7 @@ class _Chatlist1State extends State<Chatlist1> {
                                       const ChatMessageScreen(
                                         recId: "00",
                                         recEmail: 'bissa',
-                                        recImageUrl: '',
+                                        recImageUrl: 'lib/assets/images/1.jpg',
                                         recUname: 'itsabhay yo boi',
                                         chatMessageNavigatedFrom:
                                             ChatMessageNavigatedFrom.chatlist,
