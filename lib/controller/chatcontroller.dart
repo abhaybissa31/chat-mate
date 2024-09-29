@@ -1,4 +1,5 @@
 import 'package:chat_app/model/chatmodel.dart';
+import 'package:chat_app/model/chatroom.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
@@ -44,17 +45,51 @@ class Chatcontroller extends GetxController {
       print("User document does not exist for userId: $currentUserId");
       senderName = "Unknown"; // Assign a default name if document doesn't exist
     }
+    DocumentSnapshot recDoc =
+        await db.collection('users').doc(targetUserId).get();
+    // print('-----------rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr');
+    // print(recDoc.data());
+    Map<String, dynamic>? receiverData = recDoc.data() as Map<String, dynamic>?;
+    // print(receiverData);
+    String? receiverUserName;
+    String? receiverEmail;
+    if (receiverData != null || receiverData!.isNotEmpty) {
+      receiverUserName =
+          receiverData['username']; // Assuming the field is 'name'
+      receiverEmail = receiverData['email'];
 
+      print(receiverEmail! +
+          " " +
+          receiverUserName!); // Assuming the field is 'email'
+      // Add any other fields you need to access here
+    } else {
+      print('Receiver not found');
+    }
+    print('---------------------------------curent uiser id $currentUserId');
     ChatModel sendChatModel = ChatModel(
-      id: messageId,
-      message: message,
-      senderId: currentUserId,
-      senderName:
-          senderName, // Include senderName in the model *****this is coming from firebase for now, change that so it only comes once we dont have to fetch again
-      receiverId: targetUserId,
-    );
+        id: messageId,
+        message: message,
+        senderId: currentUserId,
+        senderName:
+            senderName, // Include senderName in the model *****this is coming from firebase for now, change that so it only comes once we dont have to fetch again
+        receiverId: targetUserId,
+        timestamp: DateTime.now().toString());
 
+    var roomDetails = ChatRoomModel(
+      id: roomId,
+      lastMessage: message,
+      lastMessageTimestamp: DateTime.now().toString(),
+      senderUserName: senderName,
+      senderId: auth.currentUser!.uid,
+      senderEmail: auth.currentUser!.email,
+      receiverId: targetUserId,
+      receiverUserName: receiverUserName,
+      receiverEmail: receiverEmail,
+      timestamp: DateTime.now().toString(),
+      unReadMessNo: 0,
+    );
     try {
+      await db.collection("chats").doc(roomId).set(roomDetails.toJson());
       await db
           .collection("chats")
           .doc(roomId)
