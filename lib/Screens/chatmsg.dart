@@ -7,6 +7,7 @@ import 'package:chat_app/widget/pagechange.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 enum ChatMessageNavigatedFrom { chatlist, searchuser }
@@ -24,20 +25,26 @@ class ChatMessageScreen extends StatefulWidget {
   final String recId;
   final String recEmail;
   final String? recImageUrl;
+
   @override
   State<ChatMessageScreen> createState() => _ChatMessageScreenState();
 }
 
 class _ChatMessageScreenState extends State<ChatMessageScreen> {
+  TextEditingController messageController = TextEditingController();
+  Chatcontroller chatController = Chatcontroller();
+  bool showError = false;
+
   @override
   Widget build(BuildContext context) {
-    Chatcontroller chatController = Chatcontroller();
-    TextEditingController messageController = TextEditingController();
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    void initState() {
-      super.initState();
-      themeProvider.toggleTheme();
+    if (messageController.value.toString() == '' ||
+        messageController.value.toString().isEmpty) {
+      setState(() {
+        showError = true;
+        messageController.clear();
+      });
     }
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return PopScope(
       canPop: false,
@@ -53,99 +60,27 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       },
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(0.0), // Set height to 0
+          preferredSize: const Size.fromHeight(0.0),
           child: AppBar(
             systemOverlayStyle: SystemUiOverlayStyle(
-                statusBarIconBrightness: themeProvider.isDarkMode == true
-                    ? Brightness.light
-                    : Brightness.dark, // Correct property for status bar icons
-                statusBarColor:
-                    themeProvider.chngcolor, // Change status bar color
-                systemNavigationBarIconBrightness:
-                    themeProvider.isDarkMode == true
-                        ? Brightness.light
-                        : Brightness.dark,
-                systemNavigationBarColor: themeProvider
-                    .listcolor // Still applies to navigation bar icons
-                ),
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Container(
-          margin: const EdgeInsets.all(10),
-          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-          decoration: BoxDecoration(
-              color: themeProvider.chngcolor,
-              borderRadius: BorderRadius.circular(100)),
-          child: Row(
-            children: [
-              SizedBox(
-                  height: 30,
-                  width: 30,
-                  child: Icon(
-                    CupertinoIcons.mic_fill,
-                    color: themeProvider.altfontclt,
-                  )),
-              const SizedBox(
-                width: 10,
-              ),
-              Expanded(
-                  child: TextField(
-                controller: messageController,
-                minLines: 1,
-                maxLines: 3,
-                enableIMEPersonalizedLearning: true,
-                enableInteractiveSelection: true,
-                keyboardType: TextInputType.text,
-                style: TextStyle(fontSize: 18, color: themeProvider.fontclr),
-                decoration: const InputDecoration(
-                  filled: false,
-                  contentPadding: EdgeInsets.all(7),
-                  enabledBorder: InputBorder.none,
-                  border: InputBorder.none,
-                  hintText: "Message",
-                ),
-              )),
-              const SizedBox(
-                width: 10,
-              ),
-              SizedBox(
-                  height: 30,
-                  width: 30,
-                  child: Icon(
-                    CupertinoIcons.photo_fill_on_rectangle_fill,
-                    color: themeProvider.altfontclt,
-                  )),
-              const SizedBox(
-                width: 10,
-              ),
-              SizedBox(
-                  height: 30,
-                  width: 30,
-                  child: InkWell(
-                    splashFactory: InkSplash.splashFactory,
-                    splashColor: Colors.grey,
-                    enableFeedback: true,
-                    onTap: () {
-                      if (messageController.text.isNotEmpty) {
-                        chatController.sendMessage(
-                            widget.recId, messageController.text);
-                      }
-                    },
-                    child: Icon(
-                      Icons.send,
-                      color: themeProvider.altfontclt,
-                    ),
-                  ))
-            ],
+              statusBarIconBrightness: themeProvider.isDarkMode == true
+                  ? Brightness.light
+                  : Brightness.dark,
+              statusBarColor: themeProvider.chngcolor,
+              systemNavigationBarIconBrightness:
+                  themeProvider.isDarkMode == true
+                      ? Brightness.light
+                      : Brightness.dark,
+              systemNavigationBarColor: themeProvider.listcolor,
+            ),
           ),
         ),
         backgroundColor: themeProvider.chngcolor,
         body: Column(
           children: [
-            // Header section with icon, avatar, and title
+            // Header section
             Padding(
-              padding: const EdgeInsets.fromLTRB(5.0, 20, 0, 20),
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 10),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -164,22 +99,18 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                               : const SearchUser(screenno: 1));
                     },
                   ),
-                  // Add spacing between icon and avatar
                   CircleAvatar(
-                    radius: 38, // Adjust radius to match design requirements
+                    radius: 38,
                     backgroundColor: Colors.blue,
                     foregroundImage: (widget.recImageUrl != null &&
                                 widget.recImageUrl !=
                                     "lib/assets/images/1.jpg" ||
                             widget.recImageUrl == '')
                         ? NetworkImage(widget.recImageUrl!)
-                        : AssetImage("lib/assets/images/1.jpg")
+                        : const AssetImage("lib/assets/images/1.jpg")
                             as ImageProvider,
-
-                    // Add color to visualize the avatar
                   ),
-                  const SizedBox(
-                      width: 10), // Add spacing between avatar and text
+                  const SizedBox(width: 10),
                   Text(
                     widget.recUname,
                     style: const TextStyle(
@@ -190,51 +121,116 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 ],
               ),
             ),
-
             // Chat messages section
             Expanded(
-              flex: 15,
               child: Container(
-                  padding: const EdgeInsets.fromLTRB(15.0, 0, 15, 0),
-                  decoration: BoxDecoration(
-                    color: themeProvider
-                        .listcolor, // Softer grey color for better visibility
-                    borderRadius: const BorderRadius.only(
-                      topLeft:
-                          Radius.circular(80.0), // Adjust the radius as needed
-                      topRight: Radius.circular(80.0),
-                    ),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 100),
+                decoration: BoxDecoration(
+                  color: themeProvider.listcolor,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(80.0),
+                    topRight: Radius.circular(80.0),
                   ),
-                  child: ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(5, 15, 5, 0),
-                      itemCount: 1,
-                      itemBuilder: (context, index) {
-                        return const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ChatBubble(
-                                  message:
-                                      "Lorem ipsum and the rest message resides here, so once again lorem ipsum",
-                                  receiving: true,
-                                  status: "read",
-                                  time: "10am",
-                                  mediaUrl: "",
-                                ),
-                                ChatBubble(
-                                  message:
-                                      "Lorem ipsum and the rest message resides here, so once again lorem ipsum",
-                                  receiving: false,
-                                  status: "read",
-                                  time: "10am",
-                                  mediaUrl: "lib/assets/images/1.jpg",
-                                )
-                              ],
-                            ));
-                      })),
+                ),
+                child: StreamBuilder(
+                  stream: chatController.getMessage(widget.recId),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(
+                        child: Text("Error ${snapshot.error}"),
+                      );
+                    } else if (snapshot.data == null ||
+                        snapshot.data!.isEmpty) {
+                      return const Center(
+                        child: Text("No messages"),
+                      );
+                    } else {
+                      return ListView.builder(
+                        reverse: true,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          DateTime timestamp =
+                              DateTime.parse(snapshot.data![index].timestamp!);
+                          String formattedTime =
+                              DateFormat('hh:mm a').format(timestamp);
+                          return ChatBubble(
+                            message: snapshot.data![index].message!,
+                            mediaUrl: snapshot.data![index].imageUrl ?? '',
+                            receiving:
+                                widget.recId == snapshot.data![index].senderId,
+                            status: "read",
+                            time: formattedTime,
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
             ),
           ],
+        ),
+        // Floating action button for message input
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.all(15),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            decoration: BoxDecoration(
+              color: themeProvider.chngcolor,
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: Row(
+              children: [
+                Icon(CupertinoIcons.mic_fill, color: themeProvider.altfontclt),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: showError
+                      ? TextField(
+                          controller: messageController,
+                          minLines: 1,
+                          maxLines: 3,
+                          keyboardType: TextInputType.text,
+                          style: TextStyle(
+                              fontSize: 18, color: themeProvider.fontclr),
+                          decoration: const InputDecoration(
+                            hintText: "Please Type dont send empty messages",
+                            border: InputBorder.none,
+                          ),
+                        )
+                      : TextField(
+                          controller: messageController,
+                          minLines: 1,
+                          maxLines: 3,
+                          keyboardType: TextInputType.text,
+                          style: TextStyle(
+                              fontSize: 18, color: themeProvider.fontclr),
+                          decoration: const InputDecoration(
+                            hintText: "Message",
+                            border: InputBorder.none,
+                          ),
+                        ),
+                ),
+                const SizedBox(width: 10),
+                Icon(CupertinoIcons.photo_fill_on_rectangle_fill,
+                    color: themeProvider.altfontclt),
+                const SizedBox(width: 10),
+                InkWell(
+                  onTap: () {
+                    if (messageController.text.isNotEmpty) {
+                      chatController.sendMessage(
+                          widget.recId, messageController.text);
+                      messageController.clear(); // Clear after sending
+                    }
+                  },
+                  child: Icon(Icons.send, color: themeProvider.altfontclt),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

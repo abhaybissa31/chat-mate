@@ -101,4 +101,17 @@ class Chatcontroller extends GetxController {
     }
     isLoading = false.obs;
   }
+
+  Stream<List<ChatModel>> getMessage(String targetUserId) {
+    String roomId = getRoomId(targetUserId);
+    return db
+        .collection('chats')
+        .doc(roomId)
+        .collection('messages')
+        .orderBy("timestamp", descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => ChatModel.fromJson(doc.data()))
+            .toList());
+  }
 }
