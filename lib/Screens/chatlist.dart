@@ -239,7 +239,11 @@ class _Chatlist1State extends State<Chatlist1> {
 
                         // Check if there's any data
                         if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                          return Center(child: Text('No chat rooms found'));
+                          return Center(
+                              child: Text(
+                            'No chat found. Start a new chat?',
+                            style: TextStyle(color: themeProvider.fontclr),
+                          ));
                         }
 
                         // Extract chat room details from the snapshot

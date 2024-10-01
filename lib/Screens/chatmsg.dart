@@ -37,12 +37,43 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   String? currentId = auth.currentUser!.uid;
   Chatcontroller chatController = Chatcontroller();
   bool showError = false;
+
+  // ScrollController to keep the list at the bottom
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToBottom();
+    });
+  }
+
+  // Function to scroll to the bottom of the chat
+  void _scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+    }
+  }
+
+  String toPascalCase(String str) {
+    return str
+        .split(' ') // Split the string into words
+        .map((word) => word.isNotEmpty
+            ? word[0].toUpperCase() + word.substring(1).toLowerCase()
+            : '') // Capitalize the first letter of each word
+        .join(' '); // Join the words back into a single string
+  }
+
+// Usage
+
   @override
   Widget build(BuildContext context) {
+    String originalString =
+        widget.recUname; // Assuming this is your original string
+    String pascalCaseString = toPascalCase(originalString);
     print('recid------------${widget.recId}');
     print('sender------------${widget.senderId}');
-    // print('recid------------${widget.recImageUrl}');
-    // print('recid------------${widget.recUname}');
     if (messageController.value.toString() == '' ||
         messageController.value.toString().isEmpty) {
       setState(() {
@@ -65,6 +96,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 : const SearchUser(screenno: 1));
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: true,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(0.0),
           child: AppBar(
@@ -106,7 +138,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     },
                   ),
                   CircleAvatar(
-                    radius: 34,
+                    radius: 32,
                     backgroundColor: Colors.blue,
                     foregroundImage: (widget.recImageUrl == null ||
                             widget.recImageUrl == '')
@@ -115,7 +147,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                   ),
                   const SizedBox(width: 10),
                   Text(
-                    widget.recUname,
+                    pascalCaseString,
                     style: const TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
@@ -134,9 +166,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 decoration: BoxDecoration(
                   color: themeProvider.listcolor,
                   borderRadius: const BorderRadius.only(
-                      // topLeft: Radius.circular(80.0),
-                      // topRight: Radius.circular(80.0),
-                      ),
+                    topLeft: Radius.circular(80.0),
+                    topRight: Radius.circular(80.0),
+                  ),
                 ),
                 child: StreamBuilder(
                   stream: chatController.getMessage(widget.recId),
@@ -156,8 +188,15 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                         ),
                       );
                     } else {
+                      // Scroll to bottom when new data comes in
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _scrollToBottom();
+                      });
+
                       return ListView.builder(
                         reverse: true,
+                        // controller:
+                        //     _scrollController, // Set the scroll controller
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         itemCount: snapshot.data!.length,
                         itemBuilder: (context, index) {
@@ -165,14 +204,12 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                               DateTime.parse(snapshot.data![index].timestamp!);
                           String formattedTime =
                               DateFormat('hh:mm a').format(timestamp);
-                          print('messages----------${widget.recImageUrl}');
+
                           return ChatBubble(
                             message: snapshot.data![index].message ?? "",
                             mediaUrl: snapshot.data![index].imageUrl ?? '',
-                            receiving: widget.recId == currentId
-                                ? widget.senderId != currentId
-                                : widget.recId ==
-                                    snapshot.data![index].senderId,
+                            receiving:
+                                snapshot.data![index].senderId != currentId,
                             status: "read",
                             time: formattedTime,
                           );
@@ -249,5 +286,11 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose(); // Dispose of the controller
+    super.dispose();
   }
 }
