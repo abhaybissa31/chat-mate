@@ -28,7 +28,7 @@ class ChatBox extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
     // Debugging statement to check uname value
-    print('ChatBox Uname: $uname');
+    // print('ChatBox Uname: $uname');
 
     return Container(
       padding: const EdgeInsets.all(22),

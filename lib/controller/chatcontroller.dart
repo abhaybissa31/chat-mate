@@ -166,7 +166,7 @@ class Chatcontroller extends GetxController {
         .collection('chats')
         .doc(roomId)
         .collection('messages')
-        .orderBy("timestamp", descending: false)
+        .orderBy("timestamp", descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => ChatModel.fromJson(doc.data()))

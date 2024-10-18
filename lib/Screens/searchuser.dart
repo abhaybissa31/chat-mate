@@ -165,6 +165,7 @@ class _SearchUserState extends State<SearchUser> {
                                       ChatMessageScreen(
                                         recEmail: data['email'],
                                         recId: data['id'],
+                                        senderId: auth.currentUser!.uid,
                                         recImageUrl: data['image_url']
                                                 .toString()
                                                 .isEmpty
@@ -199,6 +200,7 @@ class _SearchUserState extends State<SearchUser> {
                                     ChatMessageScreen(
                                       recEmail: data['email'],
                                       recId: data['id'],
+                                      senderId: auth.currentUser!.uid,
                                       recImageUrl: data['image_url']
                                               .toString()
                                               .isEmpty

@@ -18,11 +18,13 @@ class ChatMessageScreen extends StatefulWidget {
       required this.recUname,
       required this.recId,
       required this.recEmail,
+      required this.senderId,
       required this.recImageUrl,
       required this.chatMessageNavigatedFrom});
   final ChatMessageNavigatedFrom chatMessageNavigatedFrom;
   final String recUname;
   final String recId;
+  final String senderId;
   final String recEmail;
   final String? recImageUrl;
 
@@ -32,14 +34,15 @@ class ChatMessageScreen extends StatefulWidget {
 
 class _ChatMessageScreenState extends State<ChatMessageScreen> {
   TextEditingController messageController = TextEditingController();
+  String? currentId = auth.currentUser!.uid;
   Chatcontroller chatController = Chatcontroller();
   bool showError = false;
   @override
   Widget build(BuildContext context) {
     print('recid------------${widget.recId}');
-    print('recid------------${widget.recEmail}');
-    print('recid------------${widget.recImageUrl}');
-    print('recid------------${widget.recUname}');
+    print('sender------------${widget.senderId}');
+    // print('recid------------${widget.recImageUrl}');
+    // print('recid------------${widget.recUname}');
     if (messageController.value.toString() == '' ||
         messageController.value.toString().isEmpty) {
       setState(() {
@@ -166,8 +169,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                           return ChatBubble(
                             message: snapshot.data![index].message ?? "",
                             mediaUrl: snapshot.data![index].imageUrl ?? '',
-                            receiving:
-                                widget.recId == snapshot.data![index].senderId,
+                            receiving: widget.recId == currentId
+                                ? widget.senderId != currentId
+                                : widget.recId ==
+                                    snapshot.data![index].senderId,
                             status: "read",
                             time: formattedTime,
                           );
@@ -229,7 +234,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                   onTap: () {
                     if (messageController.text.isNotEmpty) {
                       chatController.sendMessage(
-                          widget.recId, messageController.text);
+                          widget.recId == currentId
+                              ? widget.senderId
+                              : widget.recId,
+                          messageController.text);
                       messageController.clear(); // Clear after sending
                     }
                   },

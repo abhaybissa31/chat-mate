@@ -154,6 +154,7 @@ class _Chatlist1State extends State<Chatlist1> {
                                     context,
                                     const ChatMessageScreen(
                                       recId: "",
+                                      senderId: "",
                                       recEmail: 'bissa',
                                       recImageUrl: 'lib/assets/images/1.jpg',
                                       recUname: 'itsabhay yo boi',
@@ -275,6 +276,10 @@ class _Chatlist1State extends State<Chatlist1> {
                                                   auth.currentUser!.uid
                                               ? room.senderId!
                                               : room.receiverId!,
+                                          senderId: room.receiverId ==
+                                                  auth.currentUser!.uid
+                                              ? room.receiverId!
+                                              : room.senderId!,
                                           recEmail: room.receiverEmail ??
                                               "unknown email",
                                           recImageUrl: room.receiverId ==
@@ -287,8 +292,7 @@ class _Chatlist1State extends State<Chatlist1> {
                                               : room.senderUserName ?? ''),
                                           // Use the determined username here
                                           chatMessageNavigatedFrom:
-                                              ChatMessageNavigatedFrom
-                                                  .searchuser,
+                                              ChatMessageNavigatedFrom.chatlist,
                                         )),
                                     child: ChatBox(
                                       lastMsg: room.lastMessage ?? '',
@@ -302,7 +306,7 @@ class _Chatlist1State extends State<Chatlist1> {
                                       //     'lib/assets/images/1.jpg',
                                       uname: displayedUserName,
                                       lastseen: room.lastMessageTimestamp ?? '',
-                                      boxtype: BoxType.searchUser,
+                                      boxtype: BoxType.chatlist,
                                     ),
                                   ),
                                 ),
