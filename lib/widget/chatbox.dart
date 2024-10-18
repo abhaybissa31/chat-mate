@@ -13,22 +13,23 @@ class ChatBox extends StatelessWidget {
     required this.uname,
     required this.lastMsg,
     required this.boxtype,
-    this.lastseen = "",
+    this.lastseen,
     this.url = "",
   });
+
   final String uname;
   final String lastMsg;
   final BoxType boxtype;
   final String? lastseen; // Make lastseen nullable if optional
-  dynamic url;
+  final dynamic url;
 
   @override
   Widget build(BuildContext context) {
-    String chatboxtype = "hehe";
     final themeProvider = Provider.of<ThemeProvider>(context);
-    // if (boxtype==BoxType.searchUser) {
 
-    // }
+    // Debugging statement to check uname value
+    print('ChatBox Uname: $uname');
+
     return Container(
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
@@ -36,7 +37,6 @@ class ChatBox extends StatelessWidget {
           BoxShadow(
             color: Colors.grey,
             blurRadius: 1,
-            // spreadRadius: 0,
           )
         ],
         color: themeProvider.chngcolor,
@@ -49,14 +49,11 @@ class ChatBox extends StatelessWidget {
           CircleAvatar(
             radius: 35,
             foregroundImage: url.toString() == "lib/assets/images/1.jpg" ||
-                    url.toString() == "" ||
                     url.toString().isEmpty
                 ? AssetImage("lib/assets/images/robot1.png")
                 : NetworkImage(url),
           ),
-          const SizedBox(
-            width: 12,
-          ),
+          const SizedBox(width: 12),
           // Name and message with time aligned
           Expanded(
             child: Column(
@@ -73,20 +70,18 @@ class ChatBox extends StatelessWidget {
                           TextStyle(color: themeProvider.fontclr, fontSize: 16),
                     ),
                     // Time aligned with the right of the name
-                    chatboxtype == "searchUser"
-                        ? Container(
-                            child: Text('data'),
-                          )
-                        : Text(
-                            lastseen!,
-                            style: const TextStyle(
-                                color: Colors.grey, fontSize: 14),
-                          ),
+                    Text(
+                      lastseen ??
+                          'No last seen', // Default text if lastseen is null
+                      style: const TextStyle(color: Colors.grey, fontSize: 14),
+                    ),
                   ],
                 ),
                 // Message below the name
                 Text(
                   lastMsg,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(color: Colors.grey, fontSize: 15),
                 ),
               ],

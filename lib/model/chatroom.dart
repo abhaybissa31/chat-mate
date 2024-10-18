@@ -89,7 +89,7 @@ class ChatRoomModel {
     final Map<String, dynamic> _data = <String, dynamic>{};
     _data["id"] = id;
     if (senderUserName != null || senderId != null || senderEmail != null) {
-      _data["senderUsername"] = senderUserName?.toString();
+      _data["senderUserName"] = senderUserName?.toString();
       _data["senderId"] = senderId?.toString();
       _data["senderEmail"] = senderEmail?.toString();
     }

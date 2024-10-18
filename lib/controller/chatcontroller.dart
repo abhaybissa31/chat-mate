@@ -3,6 +3,7 @@ import 'package:chat_app/model/chatroom.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 var uid = Uuid();
@@ -57,7 +58,8 @@ class Chatcontroller extends GetxController {
     } else {
       print('Receiver not found');
     }
-
+    List<String>? participants =
+        ([targetUserId, currentUserId] as List<dynamic>).cast<String>();
     // Create a ChatModel instance for the message
     ChatModel sendChatModel = ChatModel(
         id: messageId,
@@ -80,7 +82,7 @@ class Chatcontroller extends GetxController {
       receiverEmail: receiverEmail,
       timestamp: DateTime.now().toString(),
       unReadMessNo: 0,
-      participants: [currentUserId, targetUserId], // Add participants here
+      participants: participants, // Add participants here
     );
 
     // Save roomDetails and message in Firestore
@@ -110,40 +112,41 @@ class Chatcontroller extends GetxController {
       // Query the 'chats' collection where currentUserId is in the 'participants' array
       QuerySnapshot chatRoomsSnapshot = await db
           .collection('chats')
-          .where('participants', arrayContains: currentUserId)
+          .where('participants', arrayContains: auth.currentUser!.uid)
           .get();
 
       if (chatRoomsSnapshot.docs.isNotEmpty) {
         // Iterate through the documents and retrieve the necessary details
         for (var doc in chatRoomsSnapshot.docs) {
-          String receiverId = doc.get('receiverId');
-          String receiverName = doc.get('receiverUserName');
-          String lastMessage = doc.get('lastMessage');
-          String lastMessageTimestamp = doc.get('lastMessageTimestamp');
-
+          String? receiverId = doc.get('receiverId');
+          String? receiverName = doc.get('receiverUserName');
+          String? lastMessage = doc.get('lastMessage');
+          String? lastMessageTimestamp = doc.get('lastMessageTimestamp');
           // Fetch the receiver image from the 'users' collection using receiverId
           DocumentSnapshot userDoc =
               await db.collection('users').doc(receiverId).get();
 
           if (userDoc.exists) {
-            String receiverImage = userDoc.get(
+            String? receiverImage = userDoc.get(
                 'image_url'); // Assuming 'image_url' field in users document
-
+            DateTime timestamp = DateTime.parse(lastMessageTimestamp ?? "");
+            String formattedTime = DateFormat('hh:mm a').format(timestamp);
             // Create a ChatRoomDetail object and add it to the list
+
             chatRoomDetails.add(ChatRoomModel(
               id: doc.id,
               receiverId: receiverId,
               receiverUserName: receiverName,
-              recImage: receiverImage,
+              recImage: receiverImage ?? "lib/assets/images/1.jpg",
               lastMessage: lastMessage,
-              lastMessageTimestamp: lastMessageTimestamp,
+              lastMessageTimestamp: formattedTime,
             ));
           } else {
             print('Receiver details not found for Receiver ID: $receiverId');
           }
         }
       } else {
-        print('No chat rooms found for current user');
+        print('No chat rooms found for current user: ${auth.currentUser!.uid}');
       }
     } catch (e) {
       print('Error retrieving room details: $e');

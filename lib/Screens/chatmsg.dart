@@ -34,9 +34,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   TextEditingController messageController = TextEditingController();
   Chatcontroller chatController = Chatcontroller();
   bool showError = false;
-
   @override
   Widget build(BuildContext context) {
+    print('${widget.recImageUrl}');
+
     if (messageController.value.toString() == '' ||
         messageController.value.toString().isEmpty) {
       setState(() {
@@ -100,15 +101,12 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                     },
                   ),
                   CircleAvatar(
-                    radius: 38,
+                    radius: 34,
                     backgroundColor: Colors.blue,
-                    foregroundImage: (widget.recImageUrl != null &&
-                                widget.recImageUrl !=
-                                    "lib/assets/images/1.jpg" ||
+                    foregroundImage: (widget.recImageUrl == null ||
                             widget.recImageUrl == '')
-                        ? NetworkImage(widget.recImageUrl!)
-                        : const AssetImage("lib/assets/images/1.jpg")
-                            as ImageProvider,
+                        ? const AssetImage("lib/assets/images/1.jpg")
+                        : NetworkImage(widget.recImageUrl!) as ImageProvider,
                   ),
                   const SizedBox(width: 10),
                   Text(
@@ -121,6 +119,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 ],
               ),
             ),
+            const SizedBox(
+              height: 15,
+            ),
             // Chat messages section
             Expanded(
               child: Container(
@@ -128,9 +129,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                 decoration: BoxDecoration(
                   color: themeProvider.listcolor,
                   borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(80.0),
-                    topRight: Radius.circular(80.0),
-                  ),
+                      // topLeft: Radius.circular(80.0),
+                      // topRight: Radius.circular(80.0),
+                      ),
                 ),
                 child: StreamBuilder(
                   stream: chatController.getMessage(widget.recId),
@@ -143,8 +144,11 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                       );
                     } else if (snapshot.data == null ||
                         snapshot.data!.isEmpty) {
-                      return const Center(
-                        child: Text("No messages"),
+                      return Center(
+                        child: Text(
+                          "No messages",
+                          style: TextStyle(color: themeProvider.fontclr),
+                        ),
                       );
                     } else {
                       return ListView.builder(
