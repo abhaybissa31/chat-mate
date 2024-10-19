@@ -104,55 +104,55 @@ class Chatcontroller extends GetxController {
     isLoading.value = false;
   }
 
-  Future<List<ChatRoomModel>> retrieveRoomDetailsForCurrentUser() async {
+  Stream<List<ChatRoomModel>> retrieveRoomDetailsStreamForCurrentUser() async* {
     String currentUserId = auth.currentUser!.uid;
-    List<ChatRoomModel> chatRoomDetails = []; // List to hold the details
 
     try {
-      // Query the 'chats' collection where currentUserId is in the 'participants' array
-      QuerySnapshot chatRoomsSnapshot = await db
+      // Listen to the 'chats' collection for real-time updates where currentUserId is in the 'participants' array
+      await for (QuerySnapshot chatRoomsSnapshot in db
           .collection('chats')
-          .where('participants', arrayContains: auth.currentUser!.uid)
-          .get();
+          .where('participants', arrayContains: currentUserId)
+          .snapshots()) {
+        List<ChatRoomModel> chatRoomDetails = [];
 
-      if (chatRoomsSnapshot.docs.isNotEmpty) {
-        // Iterate through the documents and retrieve the necessary details
-        for (var doc in chatRoomsSnapshot.docs) {
-          String? receiverId = doc.get('receiverId');
-          String? receiverName = doc.get('receiverUserName');
-          String? lastMessage = doc.get('lastMessage');
-          String? lastMessageTimestamp = doc.get('lastMessageTimestamp');
-          // Fetch the receiver image from the 'users' collection using receiverId
-          DocumentSnapshot userDoc =
-              await db.collection('users').doc(receiverId).get();
+        if (chatRoomsSnapshot.docs.isNotEmpty) {
+          // Iterate through the documents and retrieve the necessary details
+          for (var doc in chatRoomsSnapshot.docs) {
+            String? receiverId = doc.get('receiverId');
+            String? receiverName = doc.get('receiverUserName');
+            String? lastMessage = doc.get('lastMessage');
+            String? lastMessageTimestamp = doc.get('lastMessageTimestamp');
+            String? senderUserName = doc.get('senderUserName');
+            String? senderId = doc.get('senderId');
+            // Fetch the receiver image from the 'users' collection using receiverId
+            DocumentSnapshot userDoc =
+                await db.collection('users').doc(receiverId).get();
 
-          if (userDoc.exists) {
-            String? receiverImage = userDoc.get(
-                'image_url'); // Assuming 'image_url' field in users document
-            DateTime timestamp = DateTime.parse(lastMessageTimestamp ?? "");
-            String formattedTime = DateFormat('hh:mm a').format(timestamp);
-            // Create a ChatRoomDetail object and add it to the list
+            if (userDoc.exists) {
+              String? receiverImage = userDoc.get('image_url');
+              DateTime timestamp = DateTime.parse(lastMessageTimestamp ?? "");
+              String formattedTime = DateFormat('hh:mm a').format(timestamp);
 
-            chatRoomDetails.add(ChatRoomModel(
-              id: doc.id,
-              receiverId: receiverId,
-              receiverUserName: receiverName,
-              recImage: receiverImage ?? "lib/assets/images/1.jpg",
-              lastMessage: lastMessage,
-              lastMessageTimestamp: formattedTime,
-            ));
-          } else {
-            print('Receiver details not found for Receiver ID: $receiverId');
+              // Create a ChatRoomDetail object and add it to the list
+              chatRoomDetails.add(ChatRoomModel(
+                id: doc.id,
+                senderId: senderId,
+                receiverId: receiverId,
+                senderUserName: senderUserName,
+                receiverUserName: receiverName,
+                recImage: receiverImage ?? "lib/assets/images/1.jpg",
+                lastMessage: lastMessage,
+                lastMessageTimestamp: formattedTime,
+              ));
+            }
           }
+          yield chatRoomDetails; // Stream the list of chat room details
         }
-      } else {
-        print('No chat rooms found for current user: ${auth.currentUser!.uid}');
       }
     } catch (e) {
       print('Error retrieving room details: $e');
+      yield []; // In case of error, return an empty list
     }
-
-    return chatRoomDetails; // Return the list of chat room details
   }
 
   // Query to get messages based on the roomId
@@ -162,7 +162,7 @@ class Chatcontroller extends GetxController {
         .collection('chats')
         .doc(roomId)
         .collection('messages')
-        .orderBy("timestamp", descending: true)
+        .orderBy("timestamp", descending: false)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => ChatModel.fromJson(doc.data()))

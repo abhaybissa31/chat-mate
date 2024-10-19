@@ -4,13 +4,10 @@ import 'package:chat_app/controller/chatcontroller.dart';
 import 'package:chat_app/model/chatroom.dart';
 import 'package:chat_app/provide/theme.dart';
 import 'package:chat_app/widget/bottomnav.dart';
-import 'package:chat_app/widget/chatbox.dart';
 import 'package:chat_app/widget/pagechange.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class Chatlist1 extends StatefulWidget {
@@ -32,12 +29,12 @@ class _Chatlist1State extends State<Chatlist1> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    chatController.retrieveRoomDetailsForCurrentUser();
+    chatController.retrieveRoomDetailsStreamForCurrentUser();
     _loadChatRooms();
   }
 
   Future<void> _loadChatRooms() async {
-    chatRoomDetails = await chatController.retrieveRoomDetailsForCurrentUser();
+    // chatRoomDetails = await chatController.retrieveRoomDetailsStreamForCurrentUser();
     setState(() {
       // Update UI if needed
     });
@@ -218,171 +215,50 @@ class _Chatlist1State extends State<Chatlist1> {
                         themeProvider.listcolor, // Global list background color
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(19.0, 19, 19, 0),
-                    child: StreamBuilder(
-                      stream: FirebaseFirestore.instance
-                          .collection('chats')
-                          .where('participants',
-                              arrayContains: auth.currentUser!.uid)
-                          .orderBy('lastMessageTimestamp', descending: false)
-                          .snapshots(),
-                      builder:
-                          (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                        // Check if the connection is still active or the data is being fetched
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                              child:
-                                  CircularProgressIndicator()); // Show loading spinner
-                        }
+                      padding: const EdgeInsets.fromLTRB(19.0, 19, 19, 0),
+                      child: StreamBuilder<List<ChatRoomModel>>(
+                        stream: chatController
+                            .retrieveRoomDetailsStreamForCurrentUser(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(child: CircularProgressIndicator());
+                          }
 
-                        // Check if the snapshot has any errors
-                        if (snapshot.hasError) {
-                          return Center(
-                              child: Text("Error: ${snapshot.error}"));
-                        }
+                          if (snapshot.hasError) {
+                            return Center(
+                                child: Text('Error: ${snapshot.error}'));
+                          }
 
-                        // Check if there's any data
-                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                          return Center(child: Text('No chat rooms found'));
-                        }
+                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                            return Center(child: Text('No chat rooms found'));
+                          }
 
-                        // Extract room details from the snapshot and ensure proper type casting
-                        var chatRoomDetails =
-                            snapshot.data!.docs.map((doc) async {
-                          // Ensure doc.data() is cast to Map<String, dynamic>
-                          Map<String, dynamic> data =
-                              doc.data() as Map<String, dynamic>;
+                          List<ChatRoomModel> chatRooms = snapshot.data!;
 
-                          // Ensure that participants is a List<String>
-                          List<String> participants =
-                              (data['participants'] as List<dynamic>)
-                                  .cast<String>();
+                          return ListView.builder(
+                            itemCount: chatRooms.length,
+                            itemBuilder: (context, index) {
+                              ChatRoomModel room = chatRooms[index];
 
-                          // Get the user ID for the receiver (assuming you want the first participant as an example)
-                          String receiverId = participants
-                              .firstWhere((id) => id != auth.currentUser!.uid);
+                              String displayedUserName =
+                                  room.senderId == auth.currentUser!.uid
+                                      ? room.receiverUserName ?? 'Unknown'
+                                      : room.senderUserName ?? 'Unknown';
 
-                          // Fetch user details for the receiver
-                          DocumentSnapshot userDoc = await FirebaseFirestore
-                              .instance
-                              .collection('users')
-                              .doc(receiverId)
-                              .get();
-                          String? imageUrl = (userDoc.data()
-                              as Map<String, dynamic>)['image_url'] as String?;
-
-                          DateTime timestamp =
-                              DateTime.parse(data['lastMessageTimestamp']);
-                          String formattedTime =
-                              DateFormat('hh:mm a').format(timestamp);
-                          // Extract room details using the data
-                          return ChatRoomModel(
-                            senderUserName: data['senderUserName'] as String,
-                            id: doc.id,
-                            lastMessage: data['lastMessage'] as String?,
-                            lastMessageTimestamp: formattedTime,
-                            receiverId: receiverId,
-                            receiverUserName:
-                                data['receiverUserName'] as String?,
-                            recImage: imageUrl ??
-                                'lib/assets/images/1.jpg', // Default image if not found
-                            participants:
-                                participants, // Ensure proper type here
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(room.recImage ?? ''),
+                                ),
+                                title: Text(displayedUserName),
+                                subtitle: Text(room.lastMessage ?? ''),
+                                trailing: Text(room.lastMessageTimestamp ?? ''),
+                              );
+                            },
                           );
-                        }).toList();
-
-                        return FutureBuilder<List<ChatRoomModel>>(
-                          future: Future.wait(
-                              chatRoomDetails), // Wait for all async operations to complete
-                          builder: (context,
-                              AsyncSnapshot<List<ChatRoomModel>> roomSnapshot) {
-                            // Check if the connection is still active or the data is being fetched
-                            if (roomSnapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return Center(
-                                  child:
-                                      CircularProgressIndicator()); // Show loading spinner
-                            }
-
-                            // Check if there's any data
-                            if (!roomSnapshot.hasData ||
-                                roomSnapshot.data!.isEmpty) {
-                              return Center(
-                                  child: Text(
-                                'No chat rooms found',
-                                style: TextStyle(color: themeProvider.fontclr),
-                              ));
-                            }
-                            return ListView.builder(
-                              physics: const ClampingScrollPhysics(),
-                              itemCount: roomSnapshot.data!.length,
-                              itemBuilder: (context, index) {
-                                final room = roomSnapshot.data![index];
-
-                                // Debugging statements to inspect values
-                                print(
-                                    'Current User ID: ${auth.currentUser!.uid}');
-                                print(
-                                    'Sender UserName: ${room.senderUserName}');
-                                print(
-                                    'Receiver UserName: ${room.receiverUserName}');
-
-                                // Determine if the current user is the sender or the receiver
-                                String displayedUserName;
-                                if (room.senderId == auth.currentUser!.uid) {
-                                  // The current user is the sender, display the receiver's username
-                                  displayedUserName = room.senderUserName!;
-                                } else {
-                                  // The current user is the receiver, display their own username
-                                  displayedUserName = room.receiverUserName!;
-                                }
-
-                                // Another debug statement to confirm which username will be displayed
-                                print('Displayed UserName: $displayedUserName');
-
-                                return Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          12, 1, 12, 15),
-                                      child: GestureDetector(
-                                        onTap: () async =>
-                                            PageChange.changeScreen(
-                                          context,
-                                          ChatMessageScreen(
-                                            recId: room.receiverId ??
-                                                "unknown recId",
-                                            recEmail: room.receiverEmail ??
-                                                "unknown email",
-                                            recImageUrl: room.recImage ?? "",
-                                            recUname:
-                                                displayedUserName, // Use the determined username here
-                                            chatMessageNavigatedFrom:
-                                                ChatMessageNavigatedFrom
-                                                    .chatlist,
-                                          ),
-                                        ),
-                                        child: ChatBox(
-                                          lastMsg: room.lastMessage!,
-                                          url: room.recImage!,
-                                          uname:
-                                              displayedUserName, // Pass the determined username
-                                          lastseen: room.lastMessageTimestamp!,
-                                          boxtype: BoxType.chatlist,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(),
-                                  ],
-                                );
-                              },
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
+                        },
+                      )),
                 ),
               ),
             ],
