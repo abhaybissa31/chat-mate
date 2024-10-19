@@ -127,8 +127,11 @@ class Chatcontroller extends GetxController {
             // Fetch the receiver image from the 'users' collection using receiverId
             DocumentSnapshot userDoc =
                 await db.collection('users').doc(receiverId).get();
+            DocumentSnapshot senderDoc =
+                await db.collection('users').doc(senderId).get();
 
             if (userDoc.exists) {
+              String? senderImage = senderDoc.get('image_url');
               String? receiverImage = userDoc.get('image_url');
               DateTime timestamp = DateTime.parse(lastMessageTimestamp ?? "");
               String formattedTime = DateFormat('hh:mm a').format(timestamp);
@@ -136,6 +139,7 @@ class Chatcontroller extends GetxController {
               // Create a ChatRoomDetail object and add it to the list
               chatRoomDetails.add(ChatRoomModel(
                 id: doc.id,
+                senderImage: senderImage,
                 senderId: senderId,
                 receiverId: receiverId,
                 senderUserName: senderUserName,

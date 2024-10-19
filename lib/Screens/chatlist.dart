@@ -4,6 +4,7 @@ import 'package:chat_app/controller/chatcontroller.dart';
 import 'package:chat_app/model/chatroom.dart';
 import 'package:chat_app/provide/theme.dart';
 import 'package:chat_app/widget/bottomnav.dart';
+import 'package:chat_app/widget/chatbox.dart';
 import 'package:chat_app/widget/pagechange.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -215,50 +216,104 @@ class _Chatlist1State extends State<Chatlist1> {
                         themeProvider.listcolor, // Global list background color
                   ),
                   child: Padding(
-                      padding: const EdgeInsets.fromLTRB(19.0, 19, 19, 0),
-                      child: StreamBuilder<List<ChatRoomModel>>(
-                        stream: chatController
-                            .retrieveRoomDetailsStreamForCurrentUser(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
-                          }
+                    padding: const EdgeInsets.fromLTRB(19.0, 19, 19, 0),
+                    child: StreamBuilder<List<ChatRoomModel>>(
+                      stream: chatController
+                          .retrieveRoomDetailsStreamForCurrentUser(),
+                      builder: (context,
+                          AsyncSnapshot<List<ChatRoomModel>> snapshot) {
+                        // Check if the connection is still active or the data is being fetched
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                              child:
+                                  CircularProgressIndicator()); // Show loading spinner
+                        }
 
-                          if (snapshot.hasError) {
-                            return Center(
-                                child: Text('Error: ${snapshot.error}'));
-                          }
+                        // Check if there's any error
+                        if (snapshot.hasError) {
+                          return Center(
+                              child: Text("Error: ${snapshot.error}"));
+                        }
 
-                          if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                            return Center(child: Text('No chat rooms found'));
-                          }
+                        // Check if there's any data
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Center(child: Text('No chat rooms found'));
+                        }
 
-                          List<ChatRoomModel> chatRooms = snapshot.data!;
+                        // Extract chat room details from the snapshot
+                        List<ChatRoomModel> chatRoomDetails = snapshot.data!;
 
-                          return ListView.builder(
-                            itemCount: chatRooms.length,
-                            itemBuilder: (context, index) {
-                              ChatRoomModel room = chatRooms[index];
+                        return ListView.builder(
+                          physics: const ClampingScrollPhysics(),
+                          itemCount: chatRoomDetails.length,
+                          itemBuilder: (context, index) {
+                            final room = chatRoomDetails[index];
 
-                              String displayedUserName =
-                                  room.senderId == auth.currentUser!.uid
-                                      ? room.receiverUserName ?? 'Unknown'
-                                      : room.senderUserName ?? 'Unknown';
+                            // Determine the username to display
+                            String displayedUserName;
+                            if (room.senderId == auth.currentUser!.uid) {
+                              // Current user is the sender, display receiver's username
+                              displayedUserName =
+                                  room.receiverUserName ?? 'Unknown';
+                            } else {
+                              // Current user is the receiver, display sender's username
+                              displayedUserName =
+                                  room.senderUserName ?? 'Unknown';
+                            }
 
-                              return ListTile(
-                                leading: CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(room.recImage ?? ''),
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(12, 1, 12, 15),
+                                  child: GestureDetector(
+                                    onTap: () async => PageChange.changeScreen(
+                                        context,
+                                        ChatMessageScreen(
+                                          recId: room.receiverId ==
+                                                  auth.currentUser!.uid
+                                              ? room.senderId!
+                                              : room.receiverId!,
+                                          recEmail: room.receiverEmail ??
+                                              "unknown email",
+                                          recImageUrl: room.receiverId ==
+                                                  auth.currentUser!.uid
+                                              ? room.senderImage
+                                              : room.recImage,
+                                          recUname: (room.senderId ==
+                                                  auth.currentUser!.uid
+                                              ? room.receiverUserName ?? ''
+                                              : room.senderUserName ?? ''),
+                                          // Use the determined username here
+                                          chatMessageNavigatedFrom:
+                                              ChatMessageNavigatedFrom
+                                                  .searchuser,
+                                        )),
+                                    child: ChatBox(
+                                      lastMsg: room.lastMessage ?? '',
+                                      url: room.receiverId ==
+                                              auth.currentUser!.uid
+                                          ? room.senderImage ??
+                                              "lib/assets/images/1.jpg"
+                                          : room.recImage ??
+                                              "lib/assets/images/1.jpg",
+                                      // url: room.recImage ??
+                                      //     'lib/assets/images/1.jpg',
+                                      uname: displayedUserName,
+                                      lastseen: room.lastMessageTimestamp ?? '',
+                                      boxtype: BoxType.searchUser,
+                                    ),
+                                  ),
                                 ),
-                                title: Text(displayedUserName),
-                                subtitle: Text(room.lastMessage ?? ''),
-                                trailing: Text(room.lastMessageTimestamp ?? ''),
-                              );
-                            },
-                          );
-                        },
-                      )),
+                                const SizedBox(),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ),
             ],

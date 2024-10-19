@@ -13,11 +13,13 @@ class ChatRoomModel {
   List<String>? participants;
   String? timestamp;
   String? recImage;
+  String? senderImage;
 
   ChatRoomModel(
       {this.id,
       this.participants,
       this.senderUserName,
+      this.senderImage,
       this.senderEmail,
       this.recImage,
       this.receiverEmail,
@@ -38,6 +40,11 @@ class ChatRoomModel {
       senderUserName = json["senderUserName"] == null
           ? null
           : (json["senderUserName"].toString());
+    }
+
+    if (json["senderImage"] is String) {
+      senderImage =
+          json["senderImage"] == null ? null : (json["senderImage"].toString());
     }
 
     if (json["participants"] is List) {
@@ -92,6 +99,7 @@ class ChatRoomModel {
       _data["senderUserName"] = senderUserName?.toString();
       _data["senderId"] = senderId?.toString();
       _data["senderEmail"] = senderEmail?.toString();
+      _data["senderImage"] = senderImage?.toString();
     }
     if (receiverId != null ||
         receiverEmail != null ||

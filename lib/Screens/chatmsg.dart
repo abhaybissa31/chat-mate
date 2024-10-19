@@ -36,8 +36,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   bool showError = false;
   @override
   Widget build(BuildContext context) {
-    print('${widget.recImageUrl}');
-
+    print('recid------------${widget.recId}');
+    print('recid------------${widget.recEmail}');
+    print('recid------------${widget.recImageUrl}');
+    print('recid------------${widget.recUname}');
     if (messageController.value.toString() == '' ||
         messageController.value.toString().isEmpty) {
       setState(() {
@@ -160,8 +162,9 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                               DateTime.parse(snapshot.data![index].timestamp!);
                           String formattedTime =
                               DateFormat('hh:mm a').format(timestamp);
+                          print('messages----------${widget.recImageUrl}');
                           return ChatBubble(
-                            message: snapshot.data![index].message!,
+                            message: snapshot.data![index].message ?? "",
                             mediaUrl: snapshot.data![index].imageUrl ?? '',
                             receiving:
                                 widget.recId == snapshot.data![index].senderId,
