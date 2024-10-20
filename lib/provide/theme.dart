@@ -4,7 +4,7 @@ class ThemeProvider with ChangeNotifier {
   bool _isDarkMode = true; // Initial state is dark mode
 
   // Initial colors and icon for dark mode
-  Color _chngcolor = const Color.fromARGB(255, 21, 21, 21);
+  Color _chngcolor = Color(0xff202124);
   Color _listcolor = Colors.black;
   Color _fontclr = Colors.white; // Changed to white for dark mode
   Color _altfontclr = Colors.purple;
@@ -25,7 +25,7 @@ class ThemeProvider with ChangeNotifier {
   void toggleTheme() {
     _isDarkMode = !_isDarkMode;
     if (_isDarkMode) {
-      _chngcolor = const Color.fromARGB(255, 21, 21, 21);
+      _chngcolor = Color(0xff202124);
       _listcolor = Colors.black;
       _fontclr = Colors.white;
       _themeicon = const Icon(

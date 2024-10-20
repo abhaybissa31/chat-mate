@@ -128,11 +128,12 @@ class _SingupscreenState extends State<Singupscreen> {
   Widget build(BuildContext context) {
     void _pickimage(String pickertype) async {
       final pickedImage = await ImagePickerAndroid().pickImage(
-        source:
-            pickertype == "Gallery" ? ImageSource.gallery : ImageSource.camera,
-        imageQuality: 70,
-        maxWidth: 150,
-      );
+          source: pickertype == "Gallery"
+              ? ImageSource.gallery
+              : ImageSource.camera,
+          imageQuality: 85,
+          maxWidth: 300, // Suitable for square display
+          maxHeight: 300);
 
       if (pickedImage != null) {
         setState(() {

@@ -97,7 +97,9 @@ class _SearchUserState extends State<SearchUser> {
                         name = value;
                       })
                     },
-                    style: TextStyle(color: themeProvider.fontclr),
+                    style: TextStyle(
+                        color: themeProvider.listcolor,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -144,100 +146,112 @@ class _SearchUserState extends State<SearchUser> {
                         bool userFound = false;
 
                         return ListView.builder(
-                          itemCount: snapshots.data!.docs.length > 10
-                              ? 10
-                              : snapshots.data!.docs.length,
-                          itemBuilder: (context, index) {
-                            var data = snapshots.data!.docs[index].data()
-                                as Map<String, dynamic>;
-
-                            if (name.isEmpty) {
-                              userFound = true; // User found in the list
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    String roomID =
-                                        chatController.getRoomId(data['id']);
-                                    print(roomID);
-                                    PageChange.changeScreen(
-                                      context,
-                                      ChatMessageScreen(
-                                        recEmail: data['email'],
-                                        recId: data['id'],
-                                        senderId: auth.currentUser!.uid,
-                                        recImageUrl: data['image_url']
-                                                .toString()
-                                                .isEmpty
-                                            ? "lib/assets/images/1.jpg" // Pass this only if you handle it as an asset
-                                            : data['image_url'],
-                                        recUname: data['username'],
-                                        chatMessageNavigatedFrom:
-                                            ChatMessageNavigatedFrom.searchuser,
-                                      ),
-                                    );
-                                  },
-                                  child: ChatBox(
-                                    boxtype: BoxType.searchUser,
-                                    uname: data['username'],
-                                    lastMsg: data['email'],
-                                    url: data['image_url'].toString().isEmpty
-                                        ? "lib/assets/images/1.jpg"
-                                        : data['image_url'],
-                                  ),
-                                ),
-                              );
-                            } else if (data['username']
-                                .toString()
-                                .toLowerCase()
-                                .startsWith(name.toLowerCase())) {
-                              userFound = true; // User found in the search
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: GestureDetector(
-                                  onTap: () async => PageChange.changeScreen(
-                                    context,
-                                    ChatMessageScreen(
-                                      recEmail: data['email'],
-                                      recId: data['id'],
-                                      senderId: auth.currentUser!.uid,
-                                      recImageUrl: data['image_url']
-                                              .toString()
-                                              .isEmpty
-                                          ? "lib/assets/images/1.jpg" // Pass this only if you handle it as an asset
+                            itemCount: snapshots.data!.docs.length > 10
+                                ? 10
+                                : snapshots.data!.docs.length,
+                            itemBuilder: (context, index) {
+                              var data = snapshots.data!.docs[index].data()
+                                  as Map<String, dynamic>;
+                              if (data['id'] == auth.currentUser!.uid) {
+                                return Container();
+                              }
+                              if (name.isEmpty) {
+                                userFound = true; // User found in the list
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      String roomID =
+                                          chatController.getRoomId(data['id']);
+                                      print(roomID);
+                                      PageChange.changeScreen(
+                                        context,
+                                        ChatMessageScreen(
+                                          recEmail: data['email'],
+                                          recId: data['id'],
+                                          senderId: auth.currentUser!.uid,
+                                          recImageUrl: data['image_url']
+                                                  .toString()
+                                                  .isEmpty
+                                              ? "lib/assets/images/1.jpg" // Pass this only if you handle it as an asset
+                                              : data['image_url'],
+                                          recUname: data['username'],
+                                          chatMessageNavigatedFrom:
+                                              ChatMessageNavigatedFrom
+                                                  .searchuser,
+                                        ),
+                                      );
+                                    },
+                                    child: ChatBox(
+                                      boxtype: BoxType.searchUser,
+                                      uname: data['username'],
+                                      lastMsg: data['email'],
+                                      url: data['image_url'].toString().isEmpty
+                                          ? "lib/assets/images/1.jpg"
                                           : data['image_url'],
-                                      recUname: data['username'],
-                                      chatMessageNavigatedFrom:
-                                          ChatMessageNavigatedFrom.searchuser,
                                     ),
                                   ),
-                                  child: ChatBox(
-                                    boxtype: BoxType.searchUser,
-                                    uname: data['username'],
-                                    lastMsg: data['email'],
-                                    url: data['image_url'].toString().isEmpty
-                                        ? "lib/assets/images/1.jpg"
-                                        : data['image_url'],
-                                  ),
-                                ),
-                              );
-                            }
+                                );
+                              } else if (data['username']
+                                  .toString()
+                                  .toLowerCase()
+                                  .startsWith(name.toLowerCase())) {
+                                userFound = true; // User found in the search
 
-                            // After all users are checked, show "No user found"
-                            if (index == snapshots.data!.docs.length - 1 &&
-                                !userFound) {
-                              return const Center(
-                                heightFactor: 25,
-                                child: Text(
-                                  'No user found',
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.white),
-                                ),
-                              );
-                            }
-                            return const SizedBox(); // If not a match, return empty widget
-                          },
-                        );
+                                if (data['id'] == auth.currentUser!.uid) {
+                                  return Container();
+                                } else {
+                                  print(
+                                      'ddddddddddddddddddddddddddddddddddddddd${data['id']}');
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: GestureDetector(
+                                      onTap: () async =>
+                                          PageChange.changeScreen(
+                                        context,
+                                        ChatMessageScreen(
+                                          recEmail: data['email'],
+                                          recId: data['id'],
+                                          senderId: auth.currentUser!.uid,
+                                          recImageUrl: data['image_url']
+                                                  .toString()
+                                                  .isEmpty
+                                              ? "lib/assets/images/1.jpg" // Pass this only if you handle it as an asset
+                                              : data['image_url'],
+                                          recUname: data['username'],
+                                          chatMessageNavigatedFrom:
+                                              ChatMessageNavigatedFrom
+                                                  .searchuser,
+                                        ),
+                                      ),
+                                      child: ChatBox(
+                                        boxtype: BoxType.searchUser,
+                                        uname: data['username'],
+                                        lastMsg: data['email'],
+                                        url:
+                                            data['image_url'].toString().isEmpty
+                                                ? "lib/assets/images/1.jpg"
+                                                : data['image_url'],
+                                      ),
+                                    ),
+                                  );
+                                }
+
+                                // After all users are checked, show "No user found"
+                                if (index == snapshots.data!.docs.length - 1 &&
+                                    !userFound) {
+                                  return const Center(
+                                    heightFactor: 25,
+                                    child: Text(
+                                      'No user found',
+                                      style: TextStyle(
+                                          fontSize: 18, color: Colors.white),
+                                    ),
+                                  );
+                                }
+                                return const SizedBox(); // If not a match, return empty widget
+                              }
+                            });
                       }
                     }
                   },
