@@ -28,8 +28,10 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
         child: AppBar(
           systemOverlayStyle: SystemUiOverlayStyle(
             statusBarIconBrightness: themeProvider
-                .statusbariconcolor, // Use global status bar icon brightness
-            statusBarColor: themeProvider.chngcolor,
+                .statusbariconcolor, // Correct property for status bar icons
+            statusBarColor: themeProvider.chngcolor, // Change status bar color
+            systemNavigationBarIconBrightness: themeProvider
+                .statusbariconcolor, // Still applies to navigation bar icons
           ),
           backgroundColor: Colors.yellow,
         ),

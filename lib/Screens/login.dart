@@ -55,7 +55,7 @@ class _LoginState extends State<Login> {
           );
 
           // Navigate to the Chatlist screen
-          PageChange.changeScreen(context, const Chatlist1());
+          PageChange.changeScreen(context, Chatlist1());
         } on FirebaseAuthException catch (error) {
           ScaffoldMessenger.of(context).clearMaterialBanners();
           ScaffoldMessenger.of(context).showSnackBar(

@@ -1,6 +1,7 @@
 import 'package:chat_app/Screens/chatmsg.dart';
 import 'package:chat_app/Screens/splashscreen.dart';
 import 'package:chat_app/provide/theme.dart';
+import 'package:chat_app/widget/bottomnav.dart';
 import 'package:chat_app/widget/chatbox.dart';
 import 'package:chat_app/widget/pagechange.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,7 +10,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class Chatlist1 extends StatefulWidget {
-  const Chatlist1({super.key});
+  Chatlist1({super.key, this.screenno});
+  var screenno;
 
   @override
   State<Chatlist1> createState() => _Chatlist1State();
@@ -31,9 +33,14 @@ class _Chatlist1State extends State<Chatlist1> {
         appBar: AppBar(
           backgroundColor: themeProvider.chngcolor, // Use global app bar color
           systemOverlayStyle: SystemUiOverlayStyle(
+            systemNavigationBarColor: themeProvider.isDarkMode
+                ? Colors.black
+                : themeProvider.chngcolor,
+            statusBarIconBrightness: themeProvider
+                .statusbariconcolor, // Correct property for status bar icons
+            statusBarColor: themeProvider.chngcolor, // Change status bar color
             systemNavigationBarIconBrightness: themeProvider
-                .statusbariconcolor, // Use global status bar icon brightness
-            statusBarColor: themeProvider.chngcolor,
+                .statusbariconcolor, // Still applies to navigation bar icons
           ),
           scrolledUnderElevation: 0,
           automaticallyImplyLeading: false,
@@ -64,6 +71,9 @@ class _Chatlist1State extends State<Chatlist1> {
               icon: themeProvider.themeicon, // Use global theme icon
             )
           ],
+        ),
+        bottomNavigationBar: BottomNav(
+          whichscreen: 0,
         ),
         body: Container(
           decoration: BoxDecoration(

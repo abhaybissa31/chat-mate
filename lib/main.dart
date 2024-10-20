@@ -39,10 +39,20 @@ class App extends StatelessWidget {
               return const CircularProgressIndicator();
             }
             if (snapshot.hasData) {
-              return const SearchUser();
+              return SearchUser(
+                screenno: 0,
+              );
             }
-            return const SearchUser();
+            return SearchUser(
+              screenno: 0,
+            );
           }),
     );
   }
 }
+
+  // if (snapshot.hasData) {
+  //             return const Chatlist1();
+  //           }
+  //           return const SplashScreen();
+  //         }),

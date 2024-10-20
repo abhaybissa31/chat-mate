@@ -1,5 +1,6 @@
 import 'package:chat_app/Screens/chatlist1.dart';
 import 'package:chat_app/provide/theme.dart';
+import 'package:chat_app/widget/bottomnav.dart';
 import 'package:chat_app/widget/pagechange.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class SearchUser extends StatefulWidget {
-  const SearchUser({super.key});
+  SearchUser({super.key, this.screenno});
+  var screenno;
   @override
   State<SearchUser> createState() => _SearchUserState();
 }
@@ -28,18 +30,23 @@ class _SearchUserState extends State<SearchUser> {
         child: AppBar(
           systemOverlayStyle: SystemUiOverlayStyle(
             statusBarIconBrightness: themeProvider
-                .statusbariconcolor, // Use global status bar icon brightness
-            statusBarColor: themeProvider.chngcolor,
+                .statusbariconcolor, // Correct property for status bar icons
+            statusBarColor: themeProvider.chngcolor, // Change status bar color
+            systemNavigationBarIconBrightness: themeProvider
+                .statusbariconcolor, // Still applies to navigation bar icons
           ),
           backgroundColor: Colors.yellow,
         ),
+      ),
+      bottomNavigationBar: BottomNav(
+        whichscreen: 1,
       ),
       backgroundColor: themeProvider.chngcolor,
       body: Column(
         children: [
           // Header section with icon, avatar, and title
           Padding(
-            padding: EdgeInsets.fromLTRB(5.0, 20, 45, 20),
+            padding: const EdgeInsets.fromLTRB(5.0, 20, 45, 20),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -68,7 +75,7 @@ class _SearchUserState extends State<SearchUser> {
                       fillColor: Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none,
+                        borderSide: BorderSide(),
                       ),
                     ),
                     style: TextStyle(color: themeProvider.fontclr),

@@ -83,7 +83,7 @@ class _SingupscreenState extends State<Singupscreen> {
         );
 
         // Redirect to Chatlist after successful signup
-        PageChange.changeScreen(context, const Chatlist1());
+        PageChange.changeScreen(context, Chatlist1());
       } on FirebaseAuthException catch (error) {
         isAuthenticating = false;
         ScaffoldMessenger.of(context).clearMaterialBanners();
