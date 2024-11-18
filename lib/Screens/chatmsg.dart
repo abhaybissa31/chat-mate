@@ -544,7 +544,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
 
   @override
   void dispose() {
-    _scrollController.dispose(); // Dispose of the controller
+    // _scrollController.dispose(); // Dispose of the controller
     super.dispose();
   }
 }

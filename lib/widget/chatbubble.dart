@@ -1,17 +1,17 @@
 import 'dart:io';
-import 'dart:io';
+// import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:chat_app/provider/theme.dart';
-import 'package:dio/dio.dart';
+// import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import 'package:image_downloader/image_downloader.dart';
 import 'package:provider/provider.dart';
+import 'package:media_scanner/media_scanner.dart';
 
-bool? downloaded = false;
-
-class ChatBubble extends StatelessWidget {
+class ChatBubble extends StatefulWidget {
   const ChatBubble(
       {super.key,
       required this.message,
@@ -25,224 +25,200 @@ class ChatBubble extends StatelessWidget {
   final String mediaUrl;
   final String status;
 
+  @override
+  State<ChatBubble> createState() => _ChatBubbleState();
+}
+
+class _ChatBubbleState extends State<ChatBubble> {
+  bool? isLoading;
+  bool showConfirm = false;
+
   Future<void> downloadImage(String mediaUrl, BuildContext context) async {
     try {
-      // Get the external storage directory
-      Directory? externalDir = await getExternalStorageDirectory();
+      setState(() {
+        isLoading = true;
+      });
 
-      if (externalDir == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Unable to access storage")),
-        );
-        return;
-      }
+      // Locate the DCIM directory
+      String dcimDirPath = "/storage/emulated/0/DCIM/ChatMate";
+      Directory dcimDir = Directory(dcimDirPath);
 
-      // Create a folder named 'ChatMate' in the external directory
-      String chatMateDirPath = "${externalDir.path}/ChatMate";
-      Directory chatMateDir = Directory(chatMateDirPath);
-
-      if (!await chatMateDir.exists()) {
-        await chatMateDir.create(recursive: true);
+      // Ensure the ChatMate folder exists
+      if (!await dcimDir.exists()) {
+        await dcimDir.create(recursive: true);
       }
 
       // Define the file name and path
       String fileName = "image_${DateTime.now().millisecondsSinceEpoch}.jpg";
-      String filePath = "$chatMateDirPath/$fileName";
+      String filePath = "$dcimDirPath/$fileName";
 
-      // Download the file using Dio
+      // Download the image
       Dio dio = Dio();
       await dio.download(mediaUrl, filePath);
-      downloaded = true;
-      // Notify the user
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Image downloaded to $filePath")),
-      );
+
+      // Notify the media scanner about the new file
+      await MediaScanner.loadMedia(path: filePath);
+
+      setState(() {
+        isLoading = false;
+        showConfirm = true;
+      });
+
+      // Hide the confirmation message after 2 seconds
+      Future.delayed(Duration(seconds: 2), () {
+        if (mounted) {
+          setState(() {
+            showConfirm = false;
+          });
+        }
+      });
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  "Image saved to DCIM and added to the gallery: $filePath")),
+        );
+      }
     } catch (e) {
-      downloaded = false;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to download image: $e")),
-      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to save image: $e")),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-    // TODO: implement build
-    print('inside chatbublllesssss $mediaUrl');
+
     return Padding(
       padding: EdgeInsets.all(10),
       child: Column(
-        crossAxisAlignment:
-            receiving ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+        crossAxisAlignment: widget.receiving
+            ? CrossAxisAlignment.start
+            : CrossAxisAlignment.end,
         children: [
           Container(
-              padding: EdgeInsets.all(10),
-              constraints: BoxConstraints(
-                  maxWidth: MediaQuery.sizeOf(context).width / 1.6),
-              decoration: BoxDecoration(
-                color: themeProvider.chngcolor,
-                borderRadius: receiving
-                    ? const BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
-                        bottomLeft: Radius.circular(0),
-                        bottomRight: Radius.circular(10),
-                      )
-                    : const BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
-                        bottomLeft: Radius.circular(10),
-                        bottomRight: Radius.circular(0),
-                      ),
-              ),
-              // Inside the ChatBubble widget
-              child: mediaUrl.isEmpty
-                  ? Text(
-                      message,
-                      style: TextStyle(
-                          fontSize: 16.9, color: themeProvider.fontclr),
+            padding: EdgeInsets.all(10),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.sizeOf(context).width / 1.6,
+            ),
+            decoration: BoxDecoration(
+              color: themeProvider.chngcolor,
+              borderRadius: widget.receiving
+                  ? const BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                      bottomLeft: Radius.circular(0),
+                      bottomRight: Radius.circular(10),
                     )
-                  : Column(
-                      children: [
-                        ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: mediaUrl.startsWith(
-                                    'lib/assets/') // Check for valid asset path
-                                ? Image.asset(
-                                    mediaUrl,
-                                    height: 150,
-                                    width: 150,
-                                  )
-                                : Container(
-                                    // Handle invalid mediaUrl case
-                                    height:
-                                        200, // Default height or placeholder
-                                    color: Colors.grey,
-                                    child: InkWell(
-                                      onTap: () {
-                                        if (downloaded = true) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(SnackBar(
-                                                  content:
-                                                      Text("ImageDownloaded")));
-                                        }
-                                        print('Tapped');
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return Center(
-                                              child: Material(
-                                                color: Colors
-                                                    .transparent, // Make background transparent
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    color: Colors
-                                                        .white, // Add background color for the image
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            10), // Optional rounding
-                                                  ),
-                                                  padding: EdgeInsets.all(10),
-                                                  child: Container(
-                                                    color:
-                                                        themeProvider.chngcolor,
-                                                    child: Stack(
-                                                      children: [
-                                                        Center(
-                                                          child: Image.network(
-                                                            mediaUrl,
-                                                            fit: BoxFit.contain,
-                                                          ),
-                                                        ),
-                                                        Container(
-                                                          alignment: Alignment
-                                                              .topCenter,
-                                                          height: 55,
-                                                          color: Colors
-                                                              .transparent
-                                                              .withOpacity(0.8),
-                                                          child: Row(
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              Positioned(
-                                                                top:
-                                                                    40, // Adjust for status bar
-                                                                left: 10,
-                                                                child:
-                                                                    IconButton(
-                                                                  icon: Icon(
-                                                                      Icons
-                                                                          .arrow_back,
-                                                                      color: Colors
-                                                                          .white),
-                                                                  onPressed:
-                                                                      () {
-                                                                    Navigator.pop(
-                                                                        context);
-                                                                  },
-                                                                ),
-                                                              ),
-                                                              Positioned(
-                                                                top: 40,
-                                                                right: 0,
-                                                                child:
-                                                                    IconButton(
-                                                                  icon: Icon(
-                                                                      Icons
-                                                                          .download,
-                                                                      color: Colors
-                                                                          .white),
-                                                                  onPressed:
-                                                                      () async {
-                                                                    await downloadImage(
-                                                                        mediaUrl,
-                                                                        context);
-                                                                  },
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
+                  : const BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                      bottomLeft: Radius.circular(10),
+                      bottomRight: Radius.circular(0),
+                    ),
+            ),
+            child: widget.mediaUrl.isEmpty
+                ? Text(
+                    widget.message,
+                    style:
+                        TextStyle(fontSize: 16.9, color: themeProvider.fontclr),
+                  )
+                : Stack(
+                    children: [
+                      // Image and loading overlay
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: InkWell(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Center(
+                                  child: Material(
+                                    color: Colors.transparent,
+                                    child: Scaffold(
+                                      backgroundColor: themeProvider.chngcolor,
+                                      appBar: AppBar(
+                                        // actionsIconTheme: IconThemeData(),
+                                        centerTitle: true,
+                                        title: Text(
+                                          "Image",
+                                          style: TextStyle(
+                                              color: themeProvider.fontclr),
+                                        ),
+                                        iconTheme: IconThemeData(
+                                            color: themeProvider.fontclr),
+                                        backgroundColor:
+                                            themeProvider.chngcolor,
+                                        actions: [
+                                          isLoading == true
+                                              ? CircularProgressIndicator(
+                                                  color: themeProvider.fontclr)
+                                              : IconButton(
+                                                  icon: Icon(Icons.download,
+                                                      color: themeProvider
+                                                          .fontclr),
+                                                  onPressed: () async {
+                                                    await downloadImage(
+                                                        widget.mediaUrl,
+                                                        context);
+                                                  },
                                                 ),
-                                              ),
-                                            );
-                                          },
-                                        );
-                                      },
-                                      child: Image.network(
-                                        mediaUrl,
-                                        height: 150,
-                                        width: 150,
+                                        ],
+                                      ),
+                                      body: Center(
+                                        child: CachedNetworkImage(
+                                          imageUrl: widget.mediaUrl,
+                                          fit: BoxFit.contain,
+                                        ),
                                       ),
                                     ),
-                                  )),
-                        const SizedBox(height: 10),
-                        Text(
-                          message,
-                          style: TextStyle(
-                              fontSize: 16.9, color: themeProvider.fontclr),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: CachedNetworkImage(
+                            imageUrl: widget.mediaUrl,
+                            height: 150,
+                            width: 150,
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ],
-                    )),
-          const SizedBox(
-            height: 10,
+                      ),
+
+                      // Show confirmation message
+                      if (showConfirm)
+                        Center(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.7),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              "Download Complete",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
           ),
-          receiving
+          const SizedBox(height: 10),
+          widget.receiving
               ? Text(
-                  time,
+                  widget.time,
                   style: TextStyle(color: themeProvider.altfontclt),
                 )
               : Row(
-                  mainAxisAlignment: receiving
+                  mainAxisAlignment: widget.receiving
                       ? MainAxisAlignment.start
                       : MainAxisAlignment.end,
                   children: [
@@ -251,10 +227,10 @@ class ChatBubble extends StatelessWidget {
                       color: themeProvider.altfontclt,
                       size: 20,
                     ),
-                    Text(time,
-                        style: TextStyle(color: themeProvider.altfontclt))
+                    Text(widget.time,
+                        style: TextStyle(color: themeProvider.altfontclt)),
                   ],
-                )
+                ),
         ],
       ),
     );
