@@ -1,6 +1,7 @@
 import 'dart:io';
 // import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_app/widget/pdfview.dart';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:chat_app/provider/theme.dart';
@@ -16,11 +17,13 @@ class ChatBubble extends StatefulWidget {
       {super.key,
       required this.message,
       required this.receiving,
+      required this.mediaType,
       required this.time,
       required this.mediaUrl,
       required this.status});
   final String message;
   final bool receiving;
+  final String mediaType;
   final String time;
   final String mediaUrl;
   final String status;
@@ -93,6 +96,173 @@ class _ChatBubbleState extends State<ChatBubble> {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
+    showContent() {
+      if (widget.mediaType == "image" || widget.mediaType == "Image") {
+        // widget.mediaType.isEmpty
+        return Stack(
+          children: [
+            // Image and loading overlay
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: InkWell(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Center(
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Scaffold(
+                            backgroundColor: themeProvider.chngcolor,
+                            appBar: AppBar(
+                              // actionsIconTheme: IconThemeData(),
+                              centerTitle: true,
+                              title: Text(
+                                "Image",
+                                style: TextStyle(color: themeProvider.fontclr),
+                              ),
+                              iconTheme:
+                                  IconThemeData(color: themeProvider.fontclr),
+                              backgroundColor: themeProvider.chngcolor,
+                              actions: [
+                                isLoading == true
+                                    ? CircularProgressIndicator(
+                                        color: themeProvider.fontclr)
+                                    : IconButton(
+                                        icon: Icon(Icons.download,
+                                            color: themeProvider.fontclr),
+                                        onPressed: () async {
+                                          await downloadImage(
+                                              widget.mediaUrl, context);
+                                        },
+                                      ),
+                              ],
+                            ),
+                            body: Center(
+                              child: CachedNetworkImage(
+                                imageUrl: widget.mediaUrl,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: CachedNetworkImage(
+                  imageUrl: widget.mediaUrl,
+                  height: 150,
+                  width: 150,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+
+            // Show confirmation message
+            if (showConfirm)
+              Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    "Download Complete",
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                ),
+              ),
+          ],
+        );
+      } else if (widget.mediaType == "" || widget.mediaType.isEmpty) {
+        return Text(
+          widget.message,
+          style: TextStyle(fontSize: 16.9, color: themeProvider.fontclr),
+        );
+      } else {
+        return Stack(
+          children: [
+            // Image and loading overlay
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: InkWell(
+                onTap: () {
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return Center(
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Scaffold(
+                            backgroundColor: themeProvider.chngcolor,
+                            appBar: AppBar(
+                              // actionsIconTheme: IconThemeData(),
+                              centerTitle: true,
+                              title: Text(
+                                "Image",
+                                style: TextStyle(color: themeProvider.fontclr),
+                              ),
+                              iconTheme:
+                                  IconThemeData(color: themeProvider.fontclr),
+                              backgroundColor: themeProvider.chngcolor,
+                              actions: [
+                                isLoading == true
+                                    ? CircularProgressIndicator(
+                                        color: themeProvider.fontclr)
+                                    : IconButton(
+                                        icon: Icon(Icons.download,
+                                            color: themeProvider.fontclr),
+                                        onPressed: () async {
+                                          await downloadImage(
+                                              widget.mediaUrl, context);
+                                        },
+                                      ),
+                              ],
+                            ),
+                            body: Center(
+                              child: MyPdfViewer(
+                                pdfUrl: widget.mediaUrl,
+                                // fit: BoxFit.contain,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: CachedNetworkImage(
+                  imageUrl: widget.mediaUrl,
+                  height: 150,
+                  width: 150,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+
+            // Show confirmation message
+            if (showConfirm)
+              Center(
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.7),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    "Download Complete",
+                    style: TextStyle(color: Colors.white, fontSize: 14),
+                  ),
+                ),
+              ),
+          ],
+        );
+      }
+    }
+
+    print(widget.mediaType);
     return Padding(
       padding: EdgeInsets.all(10),
       child: Column(
@@ -121,95 +291,96 @@ class _ChatBubbleState extends State<ChatBubble> {
                       bottomRight: Radius.circular(0),
                     ),
             ),
-            child: widget.mediaUrl.isEmpty
-                ? Text(
-                    widget.message,
-                    style:
-                        TextStyle(fontSize: 16.9, color: themeProvider.fontclr),
-                  )
-                : Stack(
-                    children: [
-                      // Image and loading overlay
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: InkWell(
-                          onTap: () {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Center(
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: Scaffold(
-                                      backgroundColor: themeProvider.chngcolor,
-                                      appBar: AppBar(
-                                        // actionsIconTheme: IconThemeData(),
-                                        centerTitle: true,
-                                        title: Text(
-                                          "Image",
-                                          style: TextStyle(
-                                              color: themeProvider.fontclr),
-                                        ),
-                                        iconTheme: IconThemeData(
-                                            color: themeProvider.fontclr),
-                                        backgroundColor:
-                                            themeProvider.chngcolor,
-                                        actions: [
-                                          isLoading == true
-                                              ? CircularProgressIndicator(
-                                                  color: themeProvider.fontclr)
-                                              : IconButton(
-                                                  icon: Icon(Icons.download,
-                                                      color: themeProvider
-                                                          .fontclr),
-                                                  onPressed: () async {
-                                                    await downloadImage(
-                                                        widget.mediaUrl,
-                                                        context);
-                                                  },
-                                                ),
-                                        ],
-                                      ),
-                                      body: Center(
-                                        child: CachedNetworkImage(
-                                          imageUrl: widget.mediaUrl,
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
-                          },
-                          child: CachedNetworkImage(
-                            imageUrl: widget.mediaUrl,
-                            height: 150,
-                            width: 150,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
+            child: showContent(),
+            // child: widget.mediaType.isEmpty
+            //     ? Text(
+            //         widget.message,
+            //         style:
+            //             TextStyle(fontSize: 16.9, color: themeProvider.fontclr),
+            //       )
+            //     : Stack(
+            //         children: [
+            //           // Image and loading overlay
+            //           ClipRRect(
+            //             borderRadius: BorderRadius.circular(10),
+            //             child: InkWell(
+            //               onTap: () {
+            //                 showDialog(
+            //                   context: context,
+            //                   builder: (BuildContext context) {
+            //                     return Center(
+            //                       child: Material(
+            //                         color: Colors.transparent,
+            //                         child: Scaffold(
+            //                           backgroundColor: themeProvider.chngcolor,
+            //                           appBar: AppBar(
+            //                             // actionsIconTheme: IconThemeData(),
+            //                             centerTitle: true,
+            //                             title: Text(
+            //                               "Image",
+            //                               style: TextStyle(
+            //                                   color: themeProvider.fontclr),
+            //                             ),
+            //                             iconTheme: IconThemeData(
+            //                                 color: themeProvider.fontclr),
+            //                             backgroundColor:
+            //                                 themeProvider.chngcolor,
+            //                             actions: [
+            //                               isLoading == true
+            //                                   ? CircularProgressIndicator(
+            //                                       color: themeProvider.fontclr)
+            //                                   : IconButton(
+            //                                       icon: Icon(Icons.download,
+            //                                           color: themeProvider
+            //                                               .fontclr),
+            //                                       onPressed: () async {
+            //                                         await downloadImage(
+            //                                             widget.mediaUrl,
+            //                                             context);
+            //                                       },
+            //                                     ),
+            //                             ],
+            //                           ),
+            //                           body: Center(
+            //                             child: CachedNetworkImage(
+            //                               imageUrl: widget.mediaUrl,
+            //                               fit: BoxFit.contain,
+            //                             ),
+            //                           ),
+            //                         ),
+            //                       ),
+            //                     );
+            //                   },
+            //                 );
+            //               },
+            //               child: CachedNetworkImage(
+            //                 imageUrl: widget.mediaUrl,
+            //                 height: 150,
+            //                 width: 150,
+            //                 fit: BoxFit.cover,
+            //               ),
+            //             ),
+            //           ),
 
-                      // Show confirmation message
-                      if (showConfirm)
-                        Center(
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.7),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              "Download Complete",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 14),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
+            //           // Show confirmation message
+            //           if (showConfirm)
+            //             Center(
+            //               child: Container(
+            //                 padding: EdgeInsets.symmetric(
+            //                     horizontal: 16, vertical: 8),
+            //                 decoration: BoxDecoration(
+            //                   color: Colors.black.withOpacity(0.7),
+            //                   borderRadius: BorderRadius.circular(10),
+            //                 ),
+            //                 child: Text(
+            //                   "Download Complete",
+            //                   style:
+            //                       TextStyle(color: Colors.white, fontSize: 14),
+            //                 ),
+            //               ),
+            //             ),
+            //         ],
+            //       ),
           ),
           const SizedBox(height: 10),
           widget.receiving

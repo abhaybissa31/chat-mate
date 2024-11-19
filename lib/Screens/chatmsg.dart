@@ -47,6 +47,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   File? _pickedImageFile;
   String? mediaType;
   String? imageUrl;
+  String? documentUrl;
   bool showError = false;
 
   // ScrollController to keep the list at the bottom
@@ -100,49 +101,79 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
           .pickImage(source: ImageSource.camera, imageQuality: 80);
 
       setState(() {
-        mediaType = "Image";
+        mediaType = "image";
         _pickedImageFile = File(pickedImage!.path);
       });
-      print("Image selected: ${pickedImage!.path}");
+      // print("Image selected: ${pickedImage!.path}");
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('chat_media')
+          .child(chatController.getRoomId(widget.senderId).toString() +
+              DateTime.timestamp().toString());
+
+      // Upload the file
+      await storageRef.putFile(_pickedImageFile!);
+
+      // Await the download URL
+      imageUrl = await storageRef.getDownloadURL();
+      print(
+          '&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&S$imageUrl');
+      // print("Image selected: $mediaType");
       chatController.sendMessage(
         widget.recId == currentId
             ? widget.senderId
             : widget.recId, //URL to be send of uploaded file
         messageController.text,
-        _pickedImageFile.toString(),
-        mediaType ?? "empty",
+        imageUrl,
+        mediaType ?? "image",
       );
       Navigator.of(context).pop();
 
       // selecting image from filepicker
-    } else if (option == "File") {
+    } else if (option == "file") {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         allowMultiple: false,
         type: FileType.custom,
         allowedExtensions: ['jpg', 'pdf', 'doc', 'png', 'zip'],
       );
-      if (result != null) {
-        List<File> file = result.paths.map((path) => File(path!)).toList();
-        print('-----------------first file output -----------${file.first}');
-        print(file.toString().contains("jpeg") ? "yes" : "no");
+
+      if (result != null && result.files.single.path != null) {
+        // Get the file path
+        File file = File(result.files.single.path!);
+        print('Selected file: ${file.path}');
+        print(file.existsSync() ? "File exists" : "File does not exist");
+
         setState(() {
-          mediaType = "File";
-          _pickedImageFile = File(result.paths.toString());
+          mediaType = "file";
+          _pickedImageFile = file; // Update the selected file
         });
-        print(result.paths.toString());
-        chatController.sendMessage(
-          widget.recId == currentId
-              ? widget.senderId
-              : widget.recId, //URL to be send of uploaded file
-          messageController.text,
-          _pickedImageFile.toString(),
-          mediaType ?? "empty",
-        );
-        Navigator.of(context).pop();
+
+        // Create a unique file name using sender ID and timestamp
+        final storageRef = FirebaseStorage.instance.ref().child('chat_media').child(
+            '${chatController.getRoomId(widget.senderId)}_${DateTime.now().millisecondsSinceEpoch}');
+
+        try {
+          // Upload the file to Firebase Storage
+          final uploadTask = await storageRef.putFile(file);
+
+          // Retrieve the download URL
+          documentUrl = await storageRef.getDownloadURL();
+          print('Uploaded file URL: $documentUrl');
+
+          // Send the message with the file URL
+          chatController.sendMessage(
+            widget.recId == currentId ? widget.senderId : widget.recId,
+            messageController.text,
+            documentUrl,
+            mediaType ?? "empty",
+          );
+        } catch (e) {
+          print('File upload failed: $e');
+        }
       } else {
-        // User canceled the picker
-        Navigator.of(context).pop();
+        print('No file selected or invalid file path.');
       }
+      Navigator.of(context).pop();
     }
 
     // selecting image from gallery
@@ -150,7 +181,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       final pickedImage = await ImagePicker()
           .pickImage(source: ImageSource.gallery, imageQuality: 80);
       setState(() {
-        mediaType = "Image";
+        mediaType = "image";
         _pickedImageFile = File(pickedImage!.path);
       });
 
@@ -320,11 +351,22 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                               DateTime.parse(snapshot.data![index].timestamp!);
                           String formattedTime =
                               DateFormat('hh:mm a').format(timestamp);
+                          String mediaType1;
+                          if (snapshot.data![index].mediaType == "image" ||
+                              snapshot.data![index].mediaType == "Image") {
+                            mediaType1 = "image";
+                          } else if (snapshot.data![index].mediaType ==
+                                  "file" ||
+                              snapshot.data![index].mediaType == "File") {
+                            mediaType1 = "file";
+                          } else
+                            mediaType1 = "";
 
                           return ChatBubble(
                             message: snapshot.data![index].message ?? "",
                             mediaUrl: snapshot.data![index].mediaUrl ??
                                 "wmpty mediaurl",
+                            mediaType: mediaType1,
                             receiving:
                                 snapshot.data![index].senderId != currentId,
                             status: "read",
@@ -478,7 +520,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                               GestureDetector(
                                 onTap: () {
                                   // Handle Data 2 tap
-                                  chooseMediaOption("File");
+                                  chooseMediaOption("file");
                                   // Navigator.of(context).pop();
                                 },
                                 child: Container(
