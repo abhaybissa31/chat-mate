@@ -1,0 +1,51 @@
+showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Center(
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Scaffold(
+                              backgroundColor: themeProvider.chngcolor,
+                              appBar: AppBar(
+                                // actionsIconTheme: IconThemeData(),
+                                centerTitle: true,
+                                title: Text(
+                                  "PDF",
+                                  style:
+                                      TextStyle(color: themeProvider.fontclr),
+                                ),
+                                iconTheme:
+                                    IconThemeData(color: themeProvider.fontclr),
+                                backgroundColor: themeProvider.chngcolor,
+                                actions: [
+                                  isLoading == true
+                                      ? CircularProgressIndicator(
+                                          color: themeProvider.fontclr)
+                                      : IconButton(
+                                          icon: Icon(Icons.download,
+                                              color: themeProvider.fontclr),
+                                          onPressed: () async {
+                                            await downloadImage(
+                                                widget.mediaUrl, context);
+                                          },
+                                        ),
+                                ],
+                              ),
+                              body: Center(
+                                child: Container(
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      openFile(widget.mediaUrl);
+                                    },
+                                  ),
+                                ),
+                                // child: MyPdfViewer(
+                                //   pdfUrl: widget.mediaUrl,
+                                //   // fit: BoxFit.contain,
+                                // ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );

@@ -47,6 +47,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   File? _pickedImageFile;
   String? mediaType;
   String? imageUrl;
+  String? mediaSubType;
   String? documentUrl;
   bool showError = false;
 
@@ -93,15 +94,13 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
   // }
 
   void chooseMediaOption(String option) async {
-    // print('btn selected');
-
     // selecting image from camera
     if (option == "Camera") {
       final pickedImage = await ImagePicker()
           .pickImage(source: ImageSource.camera, imageQuality: 80);
 
       setState(() {
-        mediaType = "image";
+        mediaType = "jpg";
         _pickedImageFile = File(pickedImage!.path);
       });
       // print("Image selected: ${pickedImage!.path}");
@@ -134,17 +133,47 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         allowMultiple: false,
         type: FileType.custom,
-        allowedExtensions: ['jpg', 'pdf', 'doc', 'png', 'zip'],
+        allowedExtensions: ['jpg', 'pdf', 'doc', 'png', 'zip', 'docx', 'jpeg'],
       );
 
       if (result != null && result.files.single.path != null) {
         // Get the file path
         File file = File(result.files.single.path!);
-        print('Selected file: ${file.path}');
-        print(file.existsSync() ? "File exists" : "File does not exist");
+        // print('Selected file: ${file.path}');
+        // print(file.existsSync() ? "File exists" : "File does not exist");
+        if (file.toString().contains("doc") ||
+            file.toString().contains("docx")) {
+          setState(() {
+            mediaType = "doc";
+          });
+          // } else if (file.toString().contains("docx")) {
+          //   setState(() {
+          //     mediaType = "docx";
+          //   });
+        } else if (file.toString().contains("pdf")) {
+          setState(() {
+            mediaType = "pdf";
+          });
+        } else if (file.toString().contains("jpg")) {
+          setState(() {
+            mediaType = "jpg";
+          });
+        } else if (file.toString().contains("jpeg")) {
+          setState(() {
+            mediaType = "jpeg";
+          });
+        } else if (file.toString().contains("png")) {
+          setState(() {
+            mediaType = "png";
+          });
+        } else if (file.toString().contains("zip")) {
+          setState(() {
+            mediaType = "zip";
+          });
+        }
 
         setState(() {
-          mediaType = "file";
+          // mediaType = "file";
           _pickedImageFile = file; // Update the selected file
         });
 
@@ -181,7 +210,7 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
       final pickedImage = await ImagePicker()
           .pickImage(source: ImageSource.gallery, imageQuality: 80);
       setState(() {
-        mediaType = "image";
+        mediaType = "jpg";
         _pickedImageFile = File(pickedImage!.path);
       });
 
@@ -351,22 +380,23 @@ class _ChatMessageScreenState extends State<ChatMessageScreen> {
                               DateTime.parse(snapshot.data![index].timestamp!);
                           String formattedTime =
                               DateFormat('hh:mm a').format(timestamp);
-                          String mediaType1;
-                          if (snapshot.data![index].mediaType == "image" ||
-                              snapshot.data![index].mediaType == "Image") {
-                            mediaType1 = "image";
-                          } else if (snapshot.data![index].mediaType ==
-                                  "file" ||
-                              snapshot.data![index].mediaType == "File") {
-                            mediaType1 = "file";
-                          } else
-                            mediaType1 = "";
+                          // String mediaType1;
+                          // if (snapshot.data![index].mediaType == "image" ||
+                          //     snapshot.data![index].mediaType == "Image") {
+                          //   mediaType1 = "image";
+                          // } else if (snapshot.data![index].mediaType ==
+                          //         "file" ||
+                          //     snapshot.data![index].mediaType == "File") {
+                          //   mediaType1 = "file";
+                          // } else
+                          //   mediaType1 = "";
 
                           return ChatBubble(
                             message: snapshot.data![index].message ?? "",
                             mediaUrl: snapshot.data![index].mediaUrl ??
                                 "wmpty mediaurl",
-                            mediaType: mediaType1,
+                            mediaType: snapshot.data![index].mediaType ?? "",
+                            // mediaSubType: mediaSubType,
                             receiving:
                                 snapshot.data![index].senderId != currentId,
                             status: "read",
